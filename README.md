@@ -24,5 +24,9 @@ Purpose of Kathryn-I is
 - The processor has capable of communicating with inter-communication.
 - The processor be able to implement on artix-7(basys-3)
 
+## Block diagram
+![](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/block_diagram.png?raw=true)
+
+
 ## Work log
 - 14/10/2021 drafted block specification have been uploaded. [SPEC_DRAFT_1](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/Block_Description.ods)
