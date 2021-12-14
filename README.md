@@ -33,3 +33,4 @@ Purpose of Kathryn-I is
 - 3/11/2021 register manager(decoder and rob communication) of block specification file have been uploaded. [SPEC_DRAFT_1](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/Block_Description.ods)
 - 3/11/2021 block diagram have been uploaded. [BLOCK_DIAGRAM](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/block_diagram.png)
 - 17/11/2021 draft of decoder block have been uploaded. [decoder](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Decode/Decode.v)
+- 14/12/2021 rewrite decoder specification have been uploaded. [decoder](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/Block_Description.ods)
