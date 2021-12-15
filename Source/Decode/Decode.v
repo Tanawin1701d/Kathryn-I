@@ -1,220 +1,312 @@
 module Decode 
     #(
-        parameter W_addr_prf = 5, // width address physical arch
-        parameter W_data_prf = 32,
-        parameter W_addr_arf = 5, 
-        parameter W_data_arf = 32,// width  data architectural arch       
-        parameter W_uops     = 6,
-        parameter W_pops     = 3,
-        parameter W_opcode   = 7,
-        parameter par_xpip   = 3'b000, // execute    pip
-        parameter par_dpip   = 3'b001, // div        pip
-        parameter par_lpip   = 3'b010 // load store pip
-    )
+        parameter W_AA_REG = 5,
+        parameter W_PA_REG = 5,
+        parameter W_AA_INSTR = 32,
+        parameter W_PA_CSR  =  11,
+
+        parameter W_AD_INSTR = 32,
+        parameter W_AD_OP    = 7,
+        parameter W_PD_POPS  = 3,
+        parameter W_PD_UOPS  = 6,
+        parameter W_PD_DATA  = 32
+     )
     (
-        //output data flow
-                // p
-                output wire[W_uops-1:0]      val_pah_uops_odf,
-                // data
-                output wire[W_data_prf-1:0]  val_prf_r1_odf,
-                output wire[W_data_prf-1:0]  val_prf_r2_odf,
-                output wire[W_data_prf-1:0]  val_prf_imm_odf,
-                // addr
-                output wire[W_addr_prf-1:0]  addr_prf_r1_odf,
-                output wire[W_addr_prf-1:0]  addr_prf_r2_odf,
-                output wire[W_addr_prf-1:0]  addr_prf_r3_odf,
+        //output
+            // dfo dataflow output
+                // uops
+                output wire[W_PD_UOPS -1:0] DFO_PD_uops,
+                //data
+                output wire[W_PD_DATA -1:0] DFO_PD_rs,
+                output wire[W_PD_DATA -1:0] DFO_PD_rt,
+                output wire[W_PD_DATA -1:0] DFO_PD_imm,
+                //address
+                output wire[W_PA_REG  -1:0] DFO_PA_rd,
+                output wire[W_PA_REG  -1:0] DFO_PA_rs,
+                output wire[W_PA_REG  -1:0] DFO_PA_rt,
+                output wire[W_PA_REG  -1:0] DFO_PA_imm,
+                output wire[W_PA_CSR  -1:0] DFO_PA_cs,
+                output wire[W_AA_INSTR-1:0] DFO_AA_pc,
                 // validation
-                output wire                  valid_prf_r1_odf,
-                output wire                  valid_prf_r2_odf,
-                // pc cpy
-                output wire[W_data_arf-1:0]  val_arh_pc_odf,
-        //output control data flow
-                // op
-                output wire[W_pops-1    :0]  val_pah_pops_ocdf,
-                output wire[W_uops-1    :0]  val_pah_uops_ocdf,
+                output wire DFO_PV_rs,
+                output wire DFO_PV_rt,
+            // CDO ControlData Output
+                // ops
+                output wire[W_PD_POPS -1:0] CDO_PD_piops,
+                output wire[W_PD_UOPS -1:0] CDO_PD_uops,
                 // addr
-                output wire[W_addr_arf-1:0]  addr_arf_r1_ocdf,
-                output wire[W_addr_arf-1:0]  addr_arf_r2_ocdf,
-                output wire[W_addr_arf-1:0]  addr_arf_r3_ocdf,
-                // spec
-                output wire[W_data_arf-1:0] val_arh_spec_ocdf,
-            //output control flow
-                output wire                 booking,
-        
-        ///////////////////////////////////////////////////////////////////////////////
-        
-        
-        // input data flow
-            // p
-                input wire[W_data_arf-1:0] val_arh_instruct_idf,
-                input wire[W_data_arf-1:0] val_arh_pc_idf,
-                input wire[W_data_arf-1:0] val_arh_spec_idf,
-        // input control data flow
-            //data
-            input wire[W_data_prf-1:0] val_prf_r1_icdf,
-            input wire[W_data_prf-1:0] val_prf_r2_icdf,
-            //addr
-            input wire[W_addr_prf-1:0] addr_prf_r1_icdf,
-            input wire[W_addr_prf-1:0] addr_prf_r2_icdf,
-            input wire[W_addr_prf-1:0] addr_prf_r3_icdf,
-            //valid
-            input wire valid_prf_r1_icdf,
-            input wire valid_prf_r2_icdf,
-        // input control flow
-            input wire stall,
-            input wire clear,
-            input wire clock
+                output wire[W_AA_REG  -1:0] CDO_AA_rd,
+                output wire[W_AA_REG  -1:0] CDO_AA_rs,
+                output wire[W_AA_REG  -1:0] CDO_AA_rt,
+                output wire[W_AA_INSTR-1:0] CDO_AA_spec,
+            // CFO ControlFlow Output
+                output wire                 CFO_PC_book,
+        //input
+            // dfi
+                // data
+                input wire[W_AD_INSTR-1:0] DFI_AD_instr,
+                    
+                // address
+                input wire[W_AA_INSTR-1:0] DFI_AA_pc,
+                input wire[W_AA_INSTR-1:0] DFI_AA_spec,
+            // cdi
+                // data
+                input wire[W_PD_DATA -1:0] CDI_PD_rs,
+                input wire[W_PD_DATA -1:0] CDI_PD_rt,
+                // address
+                input wire[W_PA_REG  -1:0] CDI_PA_rd,
+                input wire[W_PA_REG  -1:0] CDI_PA_rs,
+                input wire[W_PA_REG  -1:0] CDI_PA_rt,
+                // validation
+                input wire                 CDI_PV_rs,
+                input wire                 CDI_PV_rt, 
+            // cfi
+                input wire                 CFI_PC_stall,
+                input wire                 CFI_PC_clear,
+                input wire                 clk
     );
 
     // status
-    reg CLEAR_STATUS;
-    reg STALL_STATUS;
+    reg FLAG_CLEAR;
+    reg FLAG_STALL;
     // state reg
-    reg[W_data_arf-1:0] INSTRUCT;
-    reg[W_data_arf-1:0] PC;
-    reg[W_data_arf-1:0] SPEC;
+    reg[W_AD_INSTR-1:0] INSTRUCT;
+    reg[W_AA_INSTR-1:0] PC;
+    reg[W_AA_INSTR-1:0] SPEC;
     
     // state controller
-    always @( posedge clock) begin
-        if (clear)begin
-            INSTRUCT     <= {W_data_arf{1'b0}};
-            PC           <= {W_data_arf{1'b0}};
-            SPEC         <= {W_data_arf{1'b0}};
-            CLEAR_STATUS <= 1;
-            STALL_STATUS <= 0;
-        end else if (stall)begin
-            //INSTRUCT     <= val_arh_instruct_idf;   state reg do_nothing
-            //PC           <= val_arh_pc_idf;
-            //SPEC         <= val_arh_spec_idf;
-            CLEAR_STATUS <= 0;
-            STALL_STATUS <= 1;
+    always @( posedge clk) begin
+        if (CFI_PC_clear)begin
+            INSTRUCT     <= {W_AD_INSTR{1'b0}};
+            PC           <= {W_AA_INSTR{1'b0}};
+            SPEC         <= {W_AA_INSTR{1'b0}};
+            FLAG_CLEAR <= 1;
+            FLAG_STALL <= 0;
+        end else if (CFI_PC_stall)begin
+            FLAG_CLEAR <= 0;
+            FLAG_STALL <= 1;
         end else begin
-            INSTRUCT     <= val_arh_instruct_idf;
-            PC           <= val_arh_pc_idf;
-            SPEC         <= val_arh_spec_idf;
-            CLEAR_STATUS <= 0;
-            STALL_STATUS <= 0;
+            INSTRUCT     <= DFI_AD_instr;
+            PC           <= DFI_AA_pc;
+            SPEC         <= DFI_AA_spec;
+            FLAG_CLEAR   <= 0;
+            FLAG_STALL   <= 0;
         end
     end
-
-    // decode instruction type
-    localparam par_op       = 7'b0110011;
-    localparam par_op_imm   = 7'b0010011;
-    localparam par_auipc    = 7'b0010111;
-    localparam par_jal      = 7'b1101111;
-    localparam par_jalr     = 7'b1100111;
-    localparam par_branch   = 7'b1100011;
-    localparam par_lui      = 7'b0110111;
-    localparam par_load     = 7'b0000000;
-    localparam par_store    = 7'b0100011;
-    localparam par_misc_mem = 7'b0001100;
+    // parameter
+    // decode opcode_type type
+    localparam PAR_op         = 7'b01_100_11;
+    localparam PAR_op_imm     = 7'b00_100_11;
+    localparam PAR_auipc      = 7'b00_101_11;
+    localparam PAR_jal        = 7'b11_011_11;
+    localparam PAR_jalr       = 7'b11_001_11;
+    localparam PAR_branch     = 7'b11_000_11;
+    localparam PAR_lui        = 7'b01_101_11;
+    localparam PAR_load       = 7'b00_000_11;
+    localparam PAR_store      = 7'b01_000_11;
+    localparam PAR_misc_mem   = 7'b00_011_11;
+    localparam PAR_system     = 7'b11_100_11;
+    // extend op
+    localparam PAR_op_r1      = 7'b0000000;
+    localparam PAR_op_r2      = 7'b0100000;
+    localparam PAR_op_rmd     = 7'b0000001;
+    localparam PAR_op_rd      = 3'd4;
     // instrution type
-    localparam par_instr_type_w  = 3;
-    localparam par_rtype    = 3'b000;
-    localparam par_itype    = 3'b001;
-    localparam par_stype    = 3'b010;
-    localparam par_btype    = 3'b011;
-    localparam par_utype    = 3'b100;
-    localparam par_jtype    = 3'b101;
+    localparam PAR_W_INSTR_T  = 3; 
+    localparam PAR_rtype      = 3'b000;
+    localparam PAR_itype      = 3'b001;
+    localparam PAR_stype      = 3'b010;
+    localparam PAR_btype      = 3'b011;
+    localparam PAR_utype      = 3'b100;
+    localparam PAR_jtype      = 3'b101;
     // instruction slicer
-    localparam par_w_funct7 = 7;
-    localparam par_w_funct3 = 3;
-    localparam par_w_imm12  = 12;
-    localparam par_w_imm7   = 7;
-    localparam par_w_imm20  = 20;
-    localparam par_w_imm5   = 5;
+    localparam PAR_W_funct7   = 7;
+    localparam PAR_W_funct3   = 3;
+    localparam PAR_W_imm12    = 12;
+    localparam PAR_W_imm7     = 7;
+    localparam PAR_W_imm20    = 20;
+    localparam PAR_W_imm5     = 5;
 
-    localparam par_stb_funct7 = 25;   //start bit
-    localparam par_stb_funct3 = 12;   //start bit
-    localparam par_stb_imm12  = 20;  //start bit
-    localparam par_stb_imm7   = 25;   //start bit
-    localparam par_stb_imm20  = 12;  //start bit
-    localparam par_stb_imm5   =  7;   //start bit
+    localparam PAR_STB_funct7 = 25;   //start bit
+    localparam PAR_STB_funct3 = 12;   //start bit
+    localparam PAR_STB_imm12  = 20;  //start bit
+    localparam PAR_STB_imm7   = 25;   //start bit
+    localparam PAR_STB_imm20  = 12;  //start bit
+    localparam PAR_STB_imm5   =  7;   //start bit
+    localparam PAR_STB_rd     =  7;
+    localparam PAR_STB_rs     =  15;
+    localparam PAR_STB_rt     =  20;
+    // pi ops
+    localparam PAR_XPIP       = 3'd0;
+    localparam PAR_DPIP       = 3'd1;
+    localparam PAR_LPIP       = 3'd2;
+    localparam PAR_CPIP       = 3'd3;
+    // slice instruction
+    wire[W_AD_OP -1:0]      op     = INSTRUCT[                 W_AD_OP     -1:0              ];
+    wire[W_AA_REG-1:0]      rd     = INSTRUCT[PAR_STB_rd     + W_AA_REG    -1:PAR_STB_rd     ];
+    wire[W_AA_REG-1:0]      rs     = INSTRUCT[PAR_STB_rs     + W_AA_REG    -1:PAR_STB_rs     ];
+    wire[W_AA_REG-1:0]      rt     = INSTRUCT[PAR_STB_rt     + W_AA_REG    -1:PAR_STB_rt     ];
 
+    wire[PAR_W_funct7-1:0]  funct7 = INSTRUCT[PAR_STB_funct7 + PAR_W_funct7-1:PAR_STB_funct7 ];
+    wire[PAR_W_funct3-1:0]  funct3 = INSTRUCT[PAR_STB_funct3 + PAR_W_funct3-1:PAR_STB_funct3 ];
+    wire[PAR_W_imm12 -1:0]  imm12  = INSTRUCT[PAR_STB_imm12  + PAR_W_imm12 -1:PAR_STB_imm12  ];
+    wire[PAR_W_imm7  -1:0]  imm7   = INSTRUCT[PAR_STB_imm7   + PAR_W_imm7  -1:PAR_STB_imm7   ];
+    wire[PAR_W_imm20 -1:0]  imm20  = INSTRUCT[PAR_STB_imm20  + PAR_W_imm20 -1:PAR_STB_imm20  ];
+    wire[PAR_W_imm5  -1:0]  imm5   = INSTRUCT[PAR_STB_imm5   + PAR_W_imm5  -1:PAR_STB_imm5   ];
 
-
-    
-
-    wire[W_opcode-1:0]         opcode        = val_arh_instruct_idf[W_opcode-1:0];
-    reg [par_instr_type_w-1:0] instruct_type;// use as wire
-    reg [W_pops-1:0]           pip;
-    reg [W_uops-1:0]           uops;
-
-    always @(opcode) begin
-        case (opcode)
-           par_op       : instruct_type <= par_rtype; // i type
-           par_op_imm, 
-           par_jalr,
-           par_lui, 
-           par_load,
-           par_misc_mem : instruct_type <= par_itype; // itype
-           par_store    : instruct_type <= par_stype; // stype
-           par_auipc    : instruct_type <= par_utype; // utype
-           par_branch   : instruct_type <= par_btype; // btype
-           par_jal      : instruct_type <= par_jtype; // jtype
-            default     : instruct_type <= par_rtype; // rtype default
-        endcase
-    end
-
-    wire[par_w_funct7-1:0] funct7 = val_arh_instruct_idf[par_w_funct7+ par_stb_funct7 -1:par_stb_funct7];
-    wire[par_w_funct3-1:0] funct3 = val_arh_instruct_idf[par_w_funct3+ par_stb_funct3 -1:par_stb_funct3];
-    wire[par_w_imm12 -1:0] imm12  = val_arh_instruct_idf[par_w_imm12 + par_stb_imm12  -1:par_stb_imm12 ];
-    wire[par_w_imm7  -1:0] imm7   = val_arh_instruct_idf[par_w_imm7  + par_stb_imm7   -1:par_stb_imm7  ];
-    wire[par_w_imm20 -1:0] imm20  = val_arh_instruct_idf[par_w_imm20 + par_stb_imm20  -1:par_stb_imm20 ];
-    wire[par_w_imm5  -1:0] imm5   = val_arh_instruct_idf[par_w_imm5  + par_stb_imm5   -1:par_stb_imm5  ];
-
-    always @(*) begin
-        case(instruct_type)
-            par_rtype : begin
-                            case (funct7)
-                                7'b0100000: uops <= {3'b000,funct3}; // expip
-                                7'b0000001: uops <= {3'b000,funct3}; // divpip
-                                default: uops <= {W_uops{1'b0}};
-                            endcase
-                        end
-            par_itype : begin
-                            
-                            if ( opcode == par_load )begin   //st pip
-                                uops <= {3'b000,funct3};
-                            end else if ( opcode == par_misc_mem )begin // st pip
-                                uops <= {3'b001,funct3};
-                            end else if ( opcode == par_lui ) begin // st
-                                uops <= {3'b010,funct3};
-                            end else if ( opcode == par_jalr ) begin //ex
-                                uops <= {3'b001,funct3};
-                            end else begin // ex   op-imm
-                                if (opcode == 7'b0010011 && funct7 == 7'b0100000)begin //srai
-                                    uops <= {3'b011,funct3};
-                                end else begin
-                                    uops <= {3'b010,funct3}; // remain
-                                end
-                            end
-
-                        end
-            par_stype : begin
-                                uops <= {3'b011,3'b000}; //st
-                        end
-            par_btype : begin
-                                uops <= {3'b100,funct3}; //ex
-                        end
-            par_utype : begin
-                                uops <= {3'b101,3'b000}; //ex
-                        end
-            par_jtype : begin
-                                uops <= {3'b101,3'b001}; //ex
-                        end
-            default: uops <= 7'b0000000;
-        endcase
-    end
+    wire FLAG_TYPE_op_R      = (op == PAR_op)        && ( (funct7 == PAR_op_r1 ) || (funct7 ==  PAR_op_r2));
+    wire FLAG_TYPE_op_RM     = (op == PAR_op)        &&   (funct7 == PAR_op_rmd) && (funct3 <   3'd4     );
+    wire FLAG_TYPE_op_RD     = (op == PAR_op)        &&   (funct7 == PAR_op_rmd) && (funct3 >=  3'd4     );
+    wire FLAG_TYPE_op_imm    = (op == PAR_op_imm   );
+    wire FLAG_TYPE_auipc     = (op == PAR_auipc    );
+    wire FLAG_TYPE_jal       = (op == PAR_jal      );
+    wire FLAG_TYPE_jalr      = (op == PAR_jalr     );
+    wire FLAG_TYPE_branch    = (op == PAR_branch   );
+    wire FLAG_TYPE_lui       = (op == PAR_lui      );
+    wire FLAG_TYPE_load      = (op == PAR_load     );
+    wire FLAG_TYPE_store     = (op == PAR_store    );
+    wire FLAG_TYPE_misc_mem  = (op == PAR_misc_mem );
+    wire FLAG_TYPE_system    = (op == PAR_system   );
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // opcode translation to physical ops
+    wire[W_PD_POPS-1:0]   piops;
+    reg [5          :3]   uops1;
+    reg [2          :0]   uops0;
+    wire[W_PD_UOPS-1:0]   uops  = {uops1,uops0}; // act as wire
+    assign piops =   (
+                         FLAG_TYPE_op_R 
+                      || FLAG_TYPE_op_RM
+                      || FLAG_TYPE_op_imm
+                      || FLAG_TYPE_auipc
+                      || FLAG_TYPE_jal
+                      || FLAG_TYPE_jalr
+                      || FLAG_TYPE_branch) ? PAR_XPIP: 
+                     (
+                         FLAG_TYPE_op_RD   
+                     )                     ? PAR_DPIP:
+                     (
+                         FLAG_TYPE_lui
+                      || FLAG_TYPE_load
+                      || FLAG_TYPE_store
+                      || FLAG_TYPE_misc_mem   
+                     )                     ? PAR_LPIP:
+                     (
+                         FLAG_TYPE_system
+                     )                     ? PAR_CPIP: PAR_XPIP;
 
     always @(*) begin
-        if (opcode == par_lui || opcode == par_load || opcode == par_store || opcode == par_misc_mem)begin
-            pip <= par_lpip;
-        end else if ( instruct_type == par_op && funct7 == 7'b0000001 && funct3 >= 3'b100 )begin
-            pip <= par_dpip;
-        end begin
-            pip <= par_xpip;
+        case (piops)
+        PAR_XPIP : begin 
+
+                        if ( FLAG_TYPE_op_R && (funct7 == PAR_op_r1) )                     begin uops1 <= 3'b000; uops0 <= funct3;                         end else
+                        if ( FLAG_TYPE_op_R && (funct7 == PAR_op_r2) )                     begin uops1 <= 3'b001; uops0 <= (funct3 == 3'd0) ? 3'd4 : 3'd5; end else
+                        if ( FLAG_TYPE_op_RM                       )                       begin uops1 <= 3'b001; uops0 <= funct3;                         end else
+                        if ( FLAG_TYPE_op_imm && !(funct3 == 3'd5 && imm7 == 7'b0100000) ) begin uops1 <= 3'b010; uops0 <= funct3;                         end else
+                        if ( FLAG_TYPE_op_imm &&  (funct3 == 3'd5 && imm7 == 7'b0100000) ) begin uops1 <= 3'b011; uops0 <= 3'd2;                           end else
+                        if ( FLAG_TYPE_branch)                                             begin uops1 <= 3'b011; uops0 <= funct3;                         end else
+                        if ( FLAG_TYPE_auipc)                                              begin uops1 <= 3'b100; uops0 <= 3'd0;                           end else
+                        if ( FLAG_TYPE_jal  )                                              begin uops1 <= 3'b100; uops0 <= 3'd1;                           end else
+                        if ( FLAG_TYPE_jalr )                                              begin uops1 <= 3'b100; uops0 <= 3'd2;                           end else
+                                                                                           begin uops1 <= 3'b111; uops0 <= 3'd7;                           end
+                   end
+        PAR_DPIP : begin 
+                        uops1 <= 3'b000; 
+                        uops0 <= funct3;
+                   end
+        PAR_LPIP : begin 
+                        if ( FLAG_TYPE_load  )    begin  uops1 <= 3'b000; uops0 <= funct3; end else
+                        if ( FLAG_TYPE_lui   )    begin  uops1 <= 3'b000; uops0 <= 3'd3;   end else
+                        if ( FLAG_TYPE_store )    begin  uops1 <= 3'b001; uops0 <= funct3; end else
+                        if ( FLAG_TYPE_misc_mem ) begin  uops1 <= 3'b010; uops0 <= funct3; end else
+                                                  begin  uops1 <= 3'b111; uops0 <= 3'd7;   end
         end
+        PAR_CPIP : begin 
+                        if (funct3 == 3'd0 )      begin  uops1 <= 3'b000; uops0 <= (imm12 == 12'b000000000001) ? 3'd1 : 3'd0; end else
+                                                  begin  uops1 <= 3'b001; uops0 <= funct3;                                    end
+        end
+        default  : begin uops1 <= 3'b111; uops0 <= 3'd7; end
+        endcase
     end
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// identify instruction type
+    wire[PAR_W_INSTR_T-1:0]   instr_type =     (   FLAG_TYPE_op_R
+                                                 ||FLAG_TYPE_op_RM
+                                                 ||FLAG_TYPE_op_RD
+                                               )                      ?PAR_rtype :
+                                               (
+                                                   FLAG_TYPE_op_imm
+                                                 ||FLAG_TYPE_jalr
+                                                 ||FLAG_TYPE_lui
+                                                 ||FLAG_TYPE_load
+                                                 ||FLAG_TYPE_misc_mem
+                                                 ||FLAG_TYPE_system
+                                               )                      ?PAR_itype :
+                                               (
+                                                   FLAG_TYPE_store
+                                               )                      ?PAR_stype :
+                                               (
+                                                   FLAG_TYPE_branch
+                                               )                      ?PAR_btype :
+                                               (
+                                                   FLAG_TYPE_auipc
+                                               )                      ?PAR_utype :
+                                               (
+                                                   FLAG_TYPE_jal
+                                               )                      ?PAR_jtype :PAR_rtype ;
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////output
+    //output Data Flow
+    //op
+    assign DFO_PD_uops = uops;
+    //data
+    assign DFO_PD_rs   = CDI_PD_rs;
+    assign DFO_PD_rt   = CDI_PD_rt;
+    assign DFO_PD_IMM  =  
+                               instr_type == PAR_itype ? imm12:
+                               instr_type == PAR_stype ? {imm7,imm5}:
+                               instr_type == PAR_btype ? {imm7,imm5}:
+                               instr_type == PAR_utype ? {imm20}: 
+                               instr_type == PAR_jtype ? {imm20}: 0;
+    assign DFO_PA_pc   = DFI_AA_spec;
+                        
+    //address
+    assign DFO_PA_rd   = CDI_PA_rd;
+    assign DFO_PA_rs   = CDI_PA_rs;
+    assign DFO_PA_rt   = CDI_PA_rt;
+    assign DFO_PA_cs   = imm12;
+    assign DFO_PV_rs   = CDI_PV_rs;
+    assign DFO_PV_rt   = CDI_PV_rt;
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // output Control Dataflow
+
+    // ops
+        assign CDO_PD_piops = piops;
+        assign CDO_PD_uops  = uops;
+    // request register addressing
+        assign CDO_AA_rd = (   instr_type == PAR_rtype
+                            || instr_type == PAR_itype
+                            || instr_type == PAR_utype
+                            || instr_type == PAR_jtype
+                           )                              ? rd : {W_AA_REG{1'b0}};
+
+        assign CDO_AA_rs = (   instr_type == PAR_rtype
+                            || instr_type == PAR_itype
+                            || instr_type == PAR_stype
+                            || instr_type == PAR_btype
+                           )                              ? rs : {W_AA_REG{1'b0}};
+
+        assign CDO_AA_rt = (   instr_type == PAR_rtype
+                            || instr_type == PAR_stype
+                            || instr_type == PAR_btype
+                           )                              ? rt : {W_AA_REG{1'b0}};
+        assign CDO_AA_spec = DFI_AA_spec;
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // output Control Flow
+        assign CFI_PC_book = ~FLAG_CLEAR;
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
+
 
 endmodule
