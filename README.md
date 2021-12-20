@@ -13,7 +13,7 @@ Purpose of Kathryn-I is
 - Order of the processor must be IO2I (inorder decode, out of order issue and execute, inorder committed).
 - The processor must commit the instruction at least 1 instr/cycle
 - The processor has capable of sharing data between data and instruction memory.
-~ - The processor be able to implement on artix-7(basys-3) ~
+~~- The processor be able to implement on artix-7(basys-3)~~
 
 ## Expected specification (phrase-II) // Draft
 
@@ -22,7 +22,7 @@ Purpose of Kathryn-I is
 - The processor must commit the instruction at least 2 instr/cycle.
 - The processor has capable of sharing data between data and instruction memory.
 - The processor has capable of communicating with inter-communication.
-~ - The processor be able to implement on artix-7(basys-3) ~
+~~- The processor be able to implement on artix-7(basys-3)~~
 
 ## Block diagram
 ![](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/block_diagram.jpg?raw=true)
@@ -35,3 +35,5 @@ Purpose of Kathryn-I is
 - 17/11/2021 draft of decoder block have been uploaded. [decoder](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Decode/Decode.v)
 - 14/12/2021 rewrite decoder specification have been uploaded. [decoder](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/Block_Description.ods)
 - 15/12/2021 new decoder.v block have been uploaded. [decoder](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Decode/Decode.v)
+- 16/12/2021 Extream Val finder block have been uploaded. [extV](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/TEMPLATE/Finder/Extream_val.v)
+- 16/12/2021 storage cell template of resv station block have been uploaded. [Rsv_cell](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Reservation_station/TEMPLATE/Resv_cell.v)
