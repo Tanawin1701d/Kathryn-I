@@ -5,6 +5,7 @@ module Decode
         parameter W_AA_INSTR = 32,
         parameter W_PA_CSR  =  11,
 
+        parameter W_PD_req   = 2,
         parameter W_AD_INSTR = 32,
         parameter W_AD_OP    = 7,
         parameter W_PD_POPS  = 3,
@@ -15,6 +16,7 @@ module Decode
         //output
             // dfo dataflow output
                 // uops
+                output wire[W_PD_req  -1:0] DFI_PD_REQ,
                 output wire[W_PD_UOPS -1:0] DFO_PD_uops,
                 //data
                 output wire[W_PD_DATA -1:0] DFO_PD_rs,
@@ -24,7 +26,6 @@ module Decode
                 output wire[W_PA_REG  -1:0] DFO_PA_rd,
                 output wire[W_PA_REG  -1:0] DFO_PA_rs,
                 output wire[W_PA_REG  -1:0] DFO_PA_rt,
-                output wire[W_PA_REG  -1:0] DFO_PA_imm,
                 output wire[W_PA_CSR  -1:0] DFO_PA_cs,
                 output wire[W_AA_INSTR-1:0] DFO_AA_pc,
                 // validation
@@ -141,6 +142,11 @@ module Decode
     localparam PAR_DPIP       = 3'd1;
     localparam PAR_LPIP       = 3'd2;
     localparam PAR_CPIP       = 3'd3;
+    // req
+    localparam PAR_REQ_NU     = 2'b00;
+    localparam PAR_REQ_RS     = 2'b01;
+    localparam PAR_REQ_RT     = 2'b10;
+
     // slice instruction
     wire[W_AD_OP -1:0]      op     = INSTRUCT[                 W_AD_OP     -1:0              ];
     wire[W_AA_REG-1:0]      rd     = INSTRUCT[PAR_STB_rd     + W_AA_REG    -1:PAR_STB_rd     ];
@@ -180,7 +186,8 @@ module Decode
                       || FLAG_TYPE_auipc
                       || FLAG_TYPE_jal
                       || FLAG_TYPE_jalr
-                      || FLAG_TYPE_branch) ? PAR_XPIP: 
+                      || FLAG_TYPE_branch
+                     )                    ? PAR_XPIP: 
                      (
                          FLAG_TYPE_op_RD   
                      )                     ? PAR_DPIP:
@@ -257,7 +264,18 @@ module Decode
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////output
     //output Data Flow
-    //op
+    //op & req
+    assign DFI_PD_REQ         = (  
+                                    ( (instr_type == PAR_rtype) || (instr_type == PAR_itype) ||
+                                      (instr_type == PAR_stype) || (instr_type == PAR_btype)   
+                                    )  ? PAR_REQ_RS : PAR_REQ_NU
+                                )    
+                                |  
+                                (    
+                                    ( (instr_type == PAR_rtype) || (instr_type == PAR_stype) ||
+                                      (instr_type == PAR_btype)
+                                    )  ? PAR_REQ_RT : PAR_REQ_NU
+                                );
     assign DFO_PD_uops = uops;
     //data
     assign DFO_PD_rs   = CDI_PD_rs;
@@ -268,7 +286,7 @@ module Decode
                                instr_type == PAR_btype ? {imm7,imm5}:
                                instr_type == PAR_utype ? {imm20}: 
                                instr_type == PAR_jtype ? {imm20}: 0;
-    assign DFO_PA_pc   = DFI_AA_spec;
+    assign DFO_PA_pc   = DFI_AA_pc;
                         
     //address
     assign DFO_PA_rd   = CDI_PA_rd;

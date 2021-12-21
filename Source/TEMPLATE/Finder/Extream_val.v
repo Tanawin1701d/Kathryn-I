@@ -1,7 +1,7 @@
 module Extream_val
 // binary tree structure
 #(
-    parameter level   = 3,
+    parameter level   = 4,
     parameter data_sz = 4,
     parameter comparator = 0//0 -> min , 1 -> max
 )
