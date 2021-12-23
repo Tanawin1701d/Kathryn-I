@@ -283,7 +283,7 @@ module Decode
     assign DFO_PD_IMM  =  
                                instr_type == PAR_itype ? imm12:
                                instr_type == PAR_stype ? {imm7,imm5}:
-                               instr_type == PAR_btype ? {imm7,imm5}:
+                               instr_type == PAR_btype ? {imm7,imm5, 1'b0}:
                                instr_type == PAR_utype ? {imm20}: 
                                instr_type == PAR_jtype ? {imm20}: 0;
     assign DFO_PA_pc   = DFI_AA_pc;

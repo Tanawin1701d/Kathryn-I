@@ -38,7 +38,7 @@ module Resv
             output wire[W_PD_DATA -1 : 0] DFO_PD_imm,
             //address
             output wire[W_AA_INSTR-1 : 0] DFO_AA_pc,
-        //////// control data
+        //////// control data 
             //data
             output wire[W_PC_SEL  -1 : 0] CDO_PD_odr,
             output wire[W_PD_UOPS -1 : 0] CDO_PD_uops1,
