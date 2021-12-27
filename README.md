@@ -41,4 +41,7 @@ Purpose of Kathryn-I is
 [rsv](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Reservation_station/TEMPLATE/Resv_cell.v) - [tr_mux](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/TEMPLATE/MUX/Mux.v) - [cell](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Reservation_station/TEMPLATE/Resv_cell.v)
 
 - 23/12/2021 sign extend,execution, multiplication (pip0 alu)  have been uploaded.
-[sextd](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/TEMPLATE/Int/Sign_ext.v) - [execution](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Alu_pip0/Execute.v) - [mul32](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Alu_pip0/Mul.v)
+[sextd](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/TEMPLATE/Int/Sign_ext.v) - [execution](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Alu/pip0/Execute.v) - [mul32](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Alu/pip0/Mul.v)
+
+- 27/12/2021 div logic,scoreboard storage cell(template), scoreboard logic(incomplete)  have been uploaded.
+[div](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Alu/pip1/DIV.v) - [cell](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Score_board/TEMPLATE/Scb_cell.v) - [scb](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Score_board/TEMPLATE/Scb.v)

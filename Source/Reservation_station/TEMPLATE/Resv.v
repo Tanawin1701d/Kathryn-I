@@ -309,8 +309,8 @@ module Resv
 
     end
     /////////////// connect  
-     Extream_val #(4,W_ident,0) cdr1 (candit1_re,candit1);
-     Extream_val #(4,W_ident,0) cdr2 (candit0_re,candit0);
+     Extream_val #(4,W_ident,0) cdr1 (candit1_re,candit1); // min
+     Extream_val #(4,W_ident,0) cdr2 (candit0_re,candit0); // min
     /////////////// 
 
 
