@@ -45,3 +45,7 @@ Purpose of Kathryn-I is
 
 - 27/12/2021 div logic,scoreboard storage cell(template), scoreboard logic(incomplete)  have been uploaded.
 [div](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Alu/pip1/DIV.v) - [cell](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Score_board/TEMPLATE/Scb_cell.v) - [scb](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Score_board/TEMPLATE/Scb.v)
+
+- 29/12/2021 scoreboard storage cell(fixed pip specifier), scoreboard logic(finished draft), have been uploaded. reservation station bug(incorrect shifter distination) have been fixed.
+[cell](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Score_board/TEMPLATE/Scb_cell.v) - [scb](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Score_board/TEMPLATE/Scb.v)
+-[rsv](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Reservation_station/TEMPLATE/Resv_cell.v)

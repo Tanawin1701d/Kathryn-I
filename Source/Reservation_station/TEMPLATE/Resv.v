@@ -31,7 +31,7 @@ module Resv
     // output
         //////// data flow
             //uops
-            output wire[W_PD_UOPS -1 : 0] DFO_uops,
+            output wire[W_PD_UOPS -1 : 0] DFO_PD_uops,
             //data
             output wire[W_PD_DATA -1 : 0] DFO_PD_rs,
             output wire[W_PD_DATA -1 : 0] DFO_PD_rt,
@@ -167,34 +167,36 @@ module Resv
     end
     ////////////////////////////////////////////////////////////////////////////////////
     /////////////// output
-    assign DFO_uops = CDI_PC_s1[0] ? CDO_PD_uops1:
-                      CDI_PC_s1[1] ? CDO_PD_uops2:
-                                     unused_op;
+        // DFO
+        assign DFO_PD_uops = CDI_PC_s1[0] ? CDO_PD_uops1:
+                             CDI_PC_s1[1] ? CDO_PD_uops2:
+                                            unused_op;
+        
+        Mux #(.level(4),.data_sz(W_PD_DATA),.sel_sz (W_ident-1))
+            mux_DFO_PD_rs(DFO_PD_rs,
+                        out_rs_d, // number of data set must have 2^(level-1)
+                        CDI_PC_s1[1] ? candit1_re[W_ident-1-1:0] :candit0_re[W_ident-1-1:0]
+                        );
+
+        Mux #(.level(4),.data_sz(W_PD_DATA),.sel_sz (W_ident-1))
+            mux_DFO_PD_rt(DFO_PD_rt,
+                        out_rt_d, // number of data set must have 2^(level-1)
+                        CDI_PC_s1[1] ? candit1_re[W_ident-1-1:0] :candit0_re[W_ident-1-1:0]
+                        );
+
+        Mux #(.level(4),.data_sz(W_PD_DATA),.sel_sz (W_ident-1))
+            mux_DFO_PD_imm(DFO_PD_imm,
+                        out_imm_d, // number of data set must have 2^(level-1)
+                        CDI_PC_s1[1] ? candit1_re[W_ident-1-1:0] :candit0_re[W_ident-1-1:0]
+                        );
     
-    Mux #(.level(4),.data_sz(W_PD_DATA),.sel_sz (W_ident-1))
-        mux_DFO_PD_rs(DFO_PD_rs,
-                      out_rs_d, // number of data set must have 2^(level-1)
-                      CDI_PC_s1[1] ? candit1_re[W_ident-1-1:0] :candit0_re[W_ident-1-1:0]
-                     );
-
-    Mux #(.level(4),.data_sz(W_PD_DATA),.sel_sz (W_ident-1))
-        mux_DFO_PD_rt(DFO_PD_rt,
-                      out_rt_d, // number of data set must have 2^(level-1)
-                      CDI_PC_s1[1] ? candit1_re[W_ident-1-1:0] :candit0_re[W_ident-1-1:0]
-                     );
-
-    Mux #(.level(4),.data_sz(W_PD_DATA),.sel_sz (W_ident-1))
-        mux_DFO_PD_imm(DFO_PD_imm,
-                      out_imm_d, // number of data set must have 2^(level-1)
-                      CDI_PC_s1[1] ? candit1_re[W_ident-1-1:0] :candit0_re[W_ident-1-1:0]
-                     );
-
-    Mux #(.level(4),.data_sz(W_AA_INSTR),.sel_sz (W_ident-1))
-        mux_out_pc_d(DFO_AA_pc,
-                      out_pc_d, // number of data set must have 2^(level-1)
-                      CDI_PC_s1[1] ? candit1_re[W_ident-1-1:0] :candit0_re[W_ident-1-1:0]
-                    );
-    
+        Mux #(.level(4),.data_sz(W_AA_INSTR),.sel_sz (W_ident-1))
+            mux_DFO_pc_d(DFO_AA_pc,
+                        out_pc_d, // number of data set must have 2^(level-1)
+                        CDI_PC_s1[1] ? candit1_re[W_ident-1-1:0] :candit0_re[W_ident-1-1:0]
+                        );
+    /////////////////////////////////////////////////////////////////////////////////////////
+    // CDO
     assign CFO_PC_full = (RESV_COUNT == S_PS_rsvc) && !CDI_PC_s1;
 
     wire[W_PD_UOPS-1:0] pre_uops0 ;
@@ -294,18 +296,18 @@ module Resv
     endgenerate
     /////////////// connect shifter
     for (i = 0; i < S_PS_rsvc; i = i + 1)begin
-        assign shift_req  [(i+1) * W_PD_req  -1:i * W_PD_req ] = (i != 0) ?out_req  [i * W_PD_req  -1:(i-1) * W_PD_req ] :{W_PD_req{1'b0}};
-        assign shift_pip  [(i+1) * W_pip     -1:i * W_pip    ] = (i != 0) ?out_pip  [i * W_pip     -1:(i-1) * W_pip    ] :{W_pip   {1'b0}};
-        assign shift_uops [(i+1) * W_uops    -1:i * W_uops   ] = (i != 0) ?out_uops [i * W_uops    -1:(i-1) * W_uops   ] :unused_op;
-        assign shift_rd_a [(i+1) * W_rx_a    -1:i * W_rx_a   ] = (i != 0) ?out_rd_a [i * W_rx_a    -1:(i-1) * W_rx_a   ] :{W_rx_a  {1'b0}};
-        assign shift_rs_v [(i+1)             -1:i            ] = (i != 0) ?out_rs_v [i             -1:(i-1)            ] :{        {1'b0}};
-        assign shift_rs_a [(i+1) * W_rx_a    -1:i * W_rx_a   ] = (i != 0) ?out_rs_a [i * W_rx_a    -1:(i-1) * W_rx_a   ] :{W_rx_a  {1'b0}};
-        assign shift_rs_d [(i+1) * W_rx_d    -1:i * W_rx_d   ] = (i != 0) ?out_rs_d [i * W_rx_d    -1:(i-1) * W_rx_d   ] :{W_rx_d  {1'b0}};
-        assign shift_rt_v [(i+1)             -1:i            ] = (i != 0) ?out_rt_v [i             -1:(i-1)            ] :{        {1'b0}};
-        assign shift_rt_a [(i+1) * W_rx_a    -1:i * W_rx_a   ] = (i != 0) ?out_rt_a [i * W_rx_a    -1:(i-1) * W_rx_a   ] :{W_rx_a  {1'b0}};
-        assign shift_rt_d [(i+1) * W_rx_d    -1:i * W_rx_d   ] = (i != 0) ?out_rt_d [i * W_rx_d    -1:(i-1) * W_rx_d   ] :{W_rx_d  {1'b0}};
-        assign shift_imm_d[(i+1) * W_imm_d   -1:i * W_imm_d  ] = (i != 0) ?out_imm_d[i * W_imm_d   -1:(i-1) * W_imm_d  ] :{W_imm_d {1'b0}};
-        assign shift_pc_d [(i+1) * W_pc_d    -1:i * W_pc_d   ] = (i != 0) ?out_pc_d [i * W_pc_d    -1:(i-1) * W_pc_d   ] :{W_pc_d  {1'b0}};
+        assign shift_req  [(i+1) * W_PD_req  -1:i * W_PD_req ] = (i != (S_PS_rsvc-1)) ?out_req  [(i+2) * W_PD_req  -1:(i+1) * W_PD_req ] :{W_PD_req{1'b0}};
+        assign shift_pip  [(i+1) * W_pip     -1:i * W_pip    ] = (i != (S_PS_rsvc-1)) ?out_pip  [(i+2) * W_pip     -1:(i+1) * W_pip    ] :{W_pip   {1'b0}};
+        assign shift_uops [(i+1) * W_uops    -1:i * W_uops   ] = (i != (S_PS_rsvc-1)) ?out_uops [(i+2) * W_uops    -1:(i+1) * W_uops   ] :unused_op;
+        assign shift_rd_a [(i+1) * W_rx_a    -1:i * W_rx_a   ] = (i != (S_PS_rsvc-1)) ?out_rd_a [(i+2) * W_rx_a    -1:(i+1) * W_rx_a   ] :{W_rx_a  {1'b0}};
+        assign shift_rs_v [(i+1)             -1:i            ] = (i != (S_PS_rsvc-1)) ?out_rs_v [(i+2)             -1:(i+1)            ] :{        {1'b0}};
+        assign shift_rs_a [(i+1) * W_rx_a    -1:i * W_rx_a   ] = (i != (S_PS_rsvc-1)) ?out_rs_a [(i+2) * W_rx_a    -1:(i+1) * W_rx_a   ] :{W_rx_a  {1'b0}};
+        assign shift_rs_d [(i+1) * W_rx_d    -1:i * W_rx_d   ] = (i != (S_PS_rsvc-1)) ?out_rs_d [(i+2) * W_rx_d    -1:(i+1) * W_rx_d   ] :{W_rx_d  {1'b0}};
+        assign shift_rt_v [(i+1)             -1:i            ] = (i != (S_PS_rsvc-1)) ?out_rt_v [(i+2)             -1:(i+1)            ] :{        {1'b0}};
+        assign shift_rt_a [(i+1) * W_rx_a    -1:i * W_rx_a   ] = (i != (S_PS_rsvc-1)) ?out_rt_a [(i+2) * W_rx_a    -1:(i+1) * W_rx_a   ] :{W_rx_a  {1'b0}};
+        assign shift_rt_d [(i+1) * W_rx_d    -1:i * W_rx_d   ] = (i != (S_PS_rsvc-1)) ?out_rt_d [(i+2) * W_rx_d    -1:(i+1) * W_rx_d   ] :{W_rx_d  {1'b0}};
+        assign shift_imm_d[(i+1) * W_imm_d   -1:i * W_imm_d  ] = (i != (S_PS_rsvc-1)) ?out_imm_d[(i+2) * W_imm_d   -1:(i+1) * W_imm_d  ] :{W_imm_d {1'b0}};
+        assign shift_pc_d [(i+1) * W_pc_d    -1:i * W_pc_d   ] = (i != (S_PS_rsvc-1)) ?out_pc_d [(i+2) * W_pc_d    -1:(i+1) * W_pc_d   ] :{W_pc_d  {1'b0}};
 
     end
     /////////////// connect  
