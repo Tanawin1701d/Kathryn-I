@@ -49,6 +49,6 @@ Purpose of Kathryn-I is
 - 29/12/2021 scoreboard storage cell(fixed pip specifier), scoreboard logic(finished draft), have been uploaded. reservation station bug(incorrect shifter distination) have been fixed.
 [cell](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Score_board/TEMPLATE/Scb_cell.v) - [scb](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Score_board/TEMPLATE/Scb.v)
 -[rsv](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Reservation_station/TEMPLATE/Resv_cell.v)
-- 03/1/2022 control flow logic, fixed block_diagram3 have been uploaded [BLOCK_DIAGRAM](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/block_diagram3.jpg)-
+- 02/1/2022 control flow logic, fixed block_diagram3 have been uploaded [BLOCK_DIAGRAM](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/block_diagram3.jpg)-
 [FLOW_LOGIC_DRAFT_1](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/Flow_Logic.ods)
 
