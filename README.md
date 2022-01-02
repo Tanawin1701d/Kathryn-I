@@ -25,7 +25,7 @@ Purpose of Kathryn-I is
 ~~- The processor be able to implement on artix-7(basys-3)~~
 
 ## Block diagram
-![](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/block_diagram.jpg?raw=true)
+![](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/block_diagram3.jpg?raw=true)
 
 
 ## Work log
