@@ -16,7 +16,7 @@ module Decode
         //output
             // dfo dataflow output
                 // uops
-                output wire[W_PD_req  -1:0] DFI_PD_REQ,
+                output wire[W_PD_req  -1:0] DFO_PD_REQ,
                 output wire[W_PD_UOPS -1:0] DFO_PD_uops,
                 //data
                 output wire[W_PD_DATA -1:0] DFO_PD_rs,
@@ -26,7 +26,7 @@ module Decode
                 output wire[W_PA_REG  -1:0] DFO_PA_rd,
                 output wire[W_PA_REG  -1:0] DFO_PA_rs,
                 output wire[W_PA_REG  -1:0] DFO_PA_rt,
-                output wire[W_PA_CSR  -1:0] DFO_PA_cs,
+                //output wire[W_PA_CSR  -1:0] DFO_PA_cs,
                 output wire[W_AA_INSTR-1:0] DFO_AA_pc,
                 // validation
                 output wire DFO_PV_rs,
@@ -173,6 +173,7 @@ module Decode
     wire FLAG_TYPE_store     = (op == PAR_store    );
     wire FLAG_TYPE_misc_mem  = (op == PAR_misc_mem );
     wire FLAG_TYPE_system    = (op == PAR_system   );
+    wire FLAG_TYPE_system_rs = ( FLAG_TYPE_system) && (funct3 <= 3'd3) && (funct3 >= 3'd1);
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // opcode translation to physical ops
     wire[W_PD_POPS-1:0]   piops;
@@ -265,9 +266,10 @@ module Decode
 /////////////////////////output
     //output Data Flow
     //op & req
-    assign DFI_PD_REQ         = (  
-                                    ( (instr_type == PAR_rtype) || (instr_type == PAR_itype) ||
-                                      (instr_type == PAR_stype) || (instr_type == PAR_btype)   
+    assign DFO_PD_REQ         = (  
+                                    ( (instr_type == PAR_rtype) || ( instr_type == PAR_itype  && (!FLAG_TYPE_system || FLAG_TYPE_system_rs   )) || //TODO:maybe upgrade csr type
+                                      (instr_type == PAR_stype) ||
+                                     (instr_type == PAR_btype)   
                                     )  ? PAR_REQ_RS : PAR_REQ_NU
                                 )    
                                 |  
@@ -281,18 +283,19 @@ module Decode
     assign DFO_PD_rs   = CDI_PD_rs;
     assign DFO_PD_rt   = CDI_PD_rt;
     assign DFO_PD_IMM  =  
-                               instr_type == PAR_itype ? imm12:
-                               instr_type == PAR_stype ? {imm7,imm5}:
-                               instr_type == PAR_btype ? {imm7,imm5, 1'b0}:
-                               instr_type == PAR_utype ? {imm20}: 
-                               instr_type == PAR_jtype ? {imm20}: 0;
+                               instr_type == (PAR_itype) && (!FLAG_TYPE_system || FLAG_TYPE_system_rs)? imm12:
+                              (instr_type ==  PAR_itype) && (!FLAG_TYPE_system_rs)                    ? {imm12,rs}: //TODO:maybe upgrade csr type
+                               instr_type == PAR_stype                                                ? {imm7,imm5}:
+                               instr_type == PAR_btype                                                ? {imm7,imm5, 1'b0}:
+                               instr_type == PAR_utype                                                ? {imm20}: 
+                               instr_type == PAR_jtype                                                ? {imm20}: 0;
     assign DFO_PA_pc   = DFI_AA_pc;
                         
     //address
     assign DFO_PA_rd   = CDI_PA_rd;
     assign DFO_PA_rs   = CDI_PA_rs;
     assign DFO_PA_rt   = CDI_PA_rt;
-    assign DFO_PA_cs   = imm12;
+    //assign DFO_PA_cs   = imm12;
     assign DFO_PV_rs   = CDI_PV_rs;
     assign DFO_PV_rt   = CDI_PV_rt;
 
@@ -309,9 +312,8 @@ module Decode
                             || instr_type == PAR_utype
                             || instr_type == PAR_jtype
                            )                              ? rd : {W_AA_REG{1'b0}};
-
         assign CDO_AA_rs = (   instr_type == PAR_rtype
-                            || instr_type == PAR_itype
+                            || instr_type ==(PAR_itype) && (!FLAG_TYPE_system || FLAG_TYPE_system_rs)//TODO:maybe upgrade csr type
                             || instr_type == PAR_stype
                             || instr_type == PAR_btype
                            )                              ? rs : {W_AA_REG{1'b0}};

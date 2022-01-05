@@ -1,7 +1,7 @@
-`include"Resv_cell.v"
+`include"Resv_cell_pip1.v"
 `include"../../TEMPLATE/Finder/Extream_val.v"
 `include"../../TEMPLATE/MUX/Mux.v"
-module Resv 
+module Resv_pip1
 #(
 /////////////////// address parameter///////
     parameter W_PA_REG   = 5,
@@ -98,9 +98,7 @@ module Resv
     wire [S_PS_rsvc * W_pc_d   -1: 0]   shift_pc_d;
     // input cell
     wire [W_PD_req -1: 0]   input_req   = DFI_PD_REQ; //input from decode;
-    wire [W_pip    -1: 0]   input_pip   = (DFI_PD_uops[5:3] == 3'b001) 
-                                           && (DFI_PD_uops[2:0] <= 3'd3)
-                                           && (DFI_PD_uops[2:0] >= 3'd0); // op-RM
+    wire [W_pip    -1: 0]   input_pip   = 1'b0; 
     wire [W_uops   -1: 0]   input_uops  = DFI_PD_uops;
     wire [W_rx_a   -1: 0]   input_rd_a  = DFI_PA_rd;
     wire [1        -1: 0]   input_rs_v  = DFI_PV_rs;
@@ -238,7 +236,7 @@ module Resv
     genvar i;
     generate
         for (i = 0; i < S_PS_rsvc; i = i + 1)begin
-            Resv_cell  x (
+            Resv_cell_pip1  x (
             ////////////////////// data //////////////////////////////
             out_req     [(i+1) * W_PD_req  -1:i * W_PD_req ],//global output 
             out_pip     [(i+1) * W_pip     -1:i * W_pip    ],
