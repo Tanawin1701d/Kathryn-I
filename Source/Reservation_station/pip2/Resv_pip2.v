@@ -1,4 +1,5 @@
 `include"Resv_cell_pip2.v"
+`include"../../TEMPLATE/Int/Sign_ext.v"
 `include"../../TEMPLATE/Finder/Extream_val.v"
 `include"../../TEMPLATE/MUX/Mux.v"
 module Resv_pip2
@@ -107,7 +108,7 @@ module Resv_pip2
     wire [1        -1: 0]   input_rt_v  = DFI_PV_rt;
     wire [W_rx_a   -1: 0]   input_rt_a  = DFI_PA_rt;
     wire [W_rx_d   -1: 0]   input_rt_d  = DFI_PD_rt;
-    wire [W_imm_d  -1: 0]   input_imm_d = DFI_PD_imm;
+    reg  [W_imm_d  -1: 0]   input_imm_d; // = DFI_PD_imm; // act as wire
     wire [W_pc_d   -1: 0]   input_pc_d  = DFI_AA_pc;
     // output cell
     wire [S_PS_rsvc * W_PD_req -1: 0]   out_req; //input from decode;
@@ -164,6 +165,34 @@ module Resv_pip2
         end
     end
     ////////////////////////////////////////////////////////////////////////////////////
+    /////////////// input
+    localparam OP_LD_LB    = 6'b000_000;
+    localparam OP_LD_LH    = 6'b000_001;
+    localparam OP_LD_LW    = 6'b000_010;
+    localparam OP_LD_LBU   = 6'b000_100;
+    localparam OP_LD_LHU   = 6'b000_101;
+    localparam OP_LD_LUI   = 6'b000_011;
+    localparam OP_ST_SB    = 6'b000_000;
+    localparam OP_ST_SH    = 6'b000_001;
+    localparam OP_ST_SW    = 6'b000_010;
+    
+    wire[W_PD_DATA-1:0] sign_ld_st_ext;
+    Sign_ext #(W_PD_DATA,12) m_imm12 (sign_ld_st_ext,  DFI_PD_imm[12-1:0]);
+    always@(*)begin
+        case(DFI_PD_uops)
+            OP_LD_LB,
+            OP_LD_LH,
+            OP_LD_LW,
+            OP_LD_LBU,
+            OP_LD_LHU   : input_imm_d <= sign_ld_st_ext;
+            OP_LD_LUI   : input_imm_d <= {DFI_PD_imm[20-1:0], {(W_PD_DATA-20){1'b0}}};
+            OP_ST_SB,
+            OP_ST_SH,
+            OP_ST_SW    : input_imm_d <= sign_ld_st_ext;
+            default     : input_imm_d <= {W_PD_DATA{1'b0}};
+        endcase
+    end
+    ////////////////////////////////////////////////////////////////////////////////////
     /////////////// output
         // DFO
         assign DFO_PD_uops = CDI_PC_s1[0] ? CDO_PD_uops1:
@@ -197,8 +226,8 @@ module Resv_pip2
     // CDO
     assign CFO_PC_full = (RESV_COUNT == S_PS_rsvc) && !CDI_PC_s1;
 
-    wire[W_PD_UOPS-1:0] pre_uops0 ;
-    wire[W_PD_UOPS-1:0] pre_uops1 ;
+    wire[W_PD_UOPS-1:0] pre_uops0;
+    wire[W_PD_UOPS-1:0] pre_uops1;
 
     Mux #(.level(4),.data_sz(W_PD_UOPS),.sel_sz (W_ident-1))
         mux_ops0(pre_uops0,

@@ -1,5 +1,5 @@
 // this file is used to store data of reservation station data
-module Resv_cell_pip0
+module Resv_cell_pip3
 #(
   parameter W_ident     = 4,// there are 8 cells in each reservation station but we use 4 bit, remain 1 bit for dump bit 
   parameter cell_ident  = 4'b0000,

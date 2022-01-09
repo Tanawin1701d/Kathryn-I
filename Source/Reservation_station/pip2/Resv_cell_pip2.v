@@ -1,5 +1,5 @@
 // this file is used to store data of reservation station data
-module Resv_cell_pip3
+module Resv_cell_pip2
 #(
   parameter W_ident     = 4,// there are 8 cells in each reservation station but we use 4 bit, remain 1 bit for dump bit 
   parameter cell_ident  = 4'b0000,
@@ -10,6 +10,7 @@ module Resv_cell_pip3
   parameter W_rx_d      = 32,
   parameter W_imm_d     = 32,
   parameter W_pc_d      = 32,
+  parameter I_BK        = 5,
   parameter unused_op   = {W_uops {1'b1}},
   parameter unused_cd   = {W_ident{1'b1}}
 )
@@ -84,6 +85,9 @@ input  wire                  clk
     reg [W_imm_d-1: 0]   imm_d;
     reg [W_pc_d -1: 0]   pc_d;
 
+    wire[W_imm_d-1: 0] pre_addr  = rs_d + imm_d;
+    wire               bank_iden = pre_addr[I_BK];
+
 
     always@(posedge clk)begin
         if (clear)begin
@@ -130,10 +134,10 @@ input  wire                  clk
         end
     end
     //TODO: this section will be modified for other reservation station
-    assign candit1 = ( (uops != unused_op) && (pip == 1'b1) &&  (rs_v == req[0]) && (rt_v == req[1]) )
+    assign candit1 = ( (uops != unused_op) && (rs_v == req[0]) && (rt_v == req[1]) && (bank_iden == 1'b1) )
                      ? cell_ident
                      : unused_cd;
-    assign candit0 = ( (uops != unused_op) && (pip == 1'b0) &&  (rs_v == req[0]) && (rt_v == req[1]) )
+    assign candit0 = ( (uops != unused_op) && (rs_v == req[0]) && (rt_v == req[1]) && (bank_iden == 1'b0) )
                      ? cell_ident
                      : unused_cd;
 // output wire that tell current internal register

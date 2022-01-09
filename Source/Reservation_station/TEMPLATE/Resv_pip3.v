@@ -1,4 +1,4 @@
-`include"Resv_cell.v"
+`include"Resv_cell_pip3.v"
 `include"../../TEMPLATE/Finder/Extream_val.v"
 `include"../../TEMPLATE/MUX/Mux.v"
 module Resv 
@@ -238,7 +238,7 @@ module Resv
     genvar i;
     generate
         for (i = 0; i < S_PS_rsvc; i = i + 1)begin
-            Resv_cell  x (
+            Resv_cell_pip3  x (
             ////////////////////// data //////////////////////////////
             out_req     [(i+1) * W_PD_req  -1:i * W_PD_req ],//global output 
             out_pip     [(i+1) * W_pip     -1:i * W_pip    ],

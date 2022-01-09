@@ -65,38 +65,38 @@ module Execute
     localparam V_AA_zero     = { {(W_AA_INSTR-1){1'b0}}, 1'b0 };
     
     // op_r
-    localparam OP_ADD    = 000_000;
-    localparam OP_SLL    = 000_001;
-    localparam OP_SLT    = 000_010;
-    localparam OP_SLTU   = 000_011;
-    localparam OP_XOR    = 000_100;
-    localparam OP_SRL    = 000_101;
-    localparam OP_OR     = 000_110;
-    localparam OP_AND    = 000_111;
+    localparam OP_ADD    = 6'b000_000;
+    localparam OP_SLL    = 6'b000_001;
+    localparam OP_SLT    = 6'b000_010;
+    localparam OP_SLTU   = 6'b000_011;
+    localparam OP_XOR    = 6'b000_100;
+    localparam OP_SRL    = 6'b000_101;
+    localparam OP_OR     = 6'b000_110;
+    localparam OP_AND    = 6'b000_111;
                                                                                       
-    localparam OP_SUB    = 001_100;
-    localparam OP_SRA    = 001_101;
+    localparam OP_SUB    = 6'b001_100;
+    localparam OP_SRA    = 6'b001_101;
     // op_imm                                   
-    localparam OP_ADDI   = 010_000;
-    localparam OP_SLLI   = 010_001;
-    localparam OP_SLTI   = 010_010;
-    localparam OP_SLTIU  = 010_011;
-    localparam OP_XORI   = 010_100;
-    localparam OP_SRLI   = 010_101;
-    localparam OP_ORI    = 010_110;
-    localparam OP_ANDI   = 010_111;
-    localparam OP_SRAI   = 011_010;
+    localparam OP_ADDI   = 6'b010_000;
+    localparam OP_SLLI   = 6'b010_001;
+    localparam OP_SLTI   = 6'b010_010;
+    localparam OP_SLTIU  = 6'b010_011;
+    localparam OP_XORI   = 6'b010_100;
+    localparam OP_SRLI   = 6'b010_101;
+    localparam OP_ORI    = 6'b010_110;
+    localparam OP_ANDI   = 6'b010_111;
+    localparam OP_SRAI   = 6'b011_010;
     // branch                           
-    localparam OP_BEQ    = 011_000;
-    localparam OP_BNE    = 011_001;
-    localparam OP_BLT    = 011_100;
-    localparam OP_BGE    = 011_101;
-    localparam OP_BLTU   = 011_110;
-    localparam OP_BGEU   = 011_111;
+    localparam OP_BEQ    = 6'b011_000;
+    localparam OP_BNE    = 6'b011_001;
+    localparam OP_BLT    = 6'b011_100;
+    localparam OP_BGE    = 6'b011_101;
+    localparam OP_BLTU   = 6'b011_110;
+    localparam OP_BGEU   = 6'b011_111;
     // jui                                            
-    localparam OP_AUIPC  = 100_000;
-    localparam OP_JAL    = 100_001;
-    localparam OP_JALR   = 100_010;
+    localparam OP_AUIPC  = 6'b100_000;
+    localparam OP_JAL    = 6'b100_001;
+    localparam OP_JALR   = 6'b100_010;
     ///////////////////////////////////////////////////////////////
     always @(*) begin
         case (OP)
