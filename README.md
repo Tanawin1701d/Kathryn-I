@@ -13,7 +13,7 @@ Purpose of Kathryn-I is
 - Order of the processor must be IO2I (inorder decode, out of order issue and execute, inorder committed).
 - The processor must commit the instruction at least 1 instr/cycle
 - The processor has capable of sharing data between data and instruction memory.
-~~- The processor be able to implement on artix-7(basys-3)~~
+- ~~- The processor be able to implement on artix-7(basys-3)~~
 
 ## Expected specification (phrase-II) // Draft
 
@@ -22,7 +22,7 @@ Purpose of Kathryn-I is
 - The processor must commit the instruction at least 2 instr/cycle.
 - The processor has capable of sharing data between data and instruction memory.
 - The processor has capable of communicating with inter-communication.
-~~- The processor be able to implement on artix-7(basys-3)~~
+- ~~- The processor be able to implement on artix-7(basys-3)~~
 
 ## Block diagram
 ![](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/block_diagram3.jpg?raw=true)
@@ -53,3 +53,29 @@ Purpose of Kathryn-I is
 [FLOW_LOGIC_DRAFT_1](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/Flow_Logic.ods)
 - 05/01/2022 reservation for pip0-2 & pip3(only template copy) have been uploaded and fix decoder to support imm csr instruction . [pip](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Reservation_station)-[decoder](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Decode/Decode.v)
 - 09/01/2022 reservation station for pip2(for load store operation) have been upload. [pip](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Reservation_station)
+
+## To-do List
+| block/doc name |is_built | is_test |comment| 
+|----------------|---------|---------|-------|
+|CORE_ctf        | &cross; | &cross; |   -   |
+|BHT             | &cross; | &cross; |   -   |
+|PC_decision     | &cross; | &cross; |   -   |
+|PW_instr        | &cross; | &cross; |   -   |
+|LD_instr        | &cross; | &cross; |   -   |
+|Decoder         | &check; | &cross; |   -   |
+|Rsv0            | &check; | &cross; |   -   |
+|Rsv1            | &check; | &cross; |   -   |
+|Rsv2            | &check; | &cross; |   -   |
+|Rsv3            | &check; | &cross; |   -   |
+|Scb0            | &check; | &cross; |   -   |
+|Scb1            | &cross; | &cross; |   -   |
+|Scb2            | &cross; | &cross; |   -   |
+|Scb3            | &cross; | &cross; |   -   |
+|Alu_pip0        | &check; | &cross; |   -   |
+|Alu_pip1        | &check; | &cross; |   -   |
+|Alu_pip2        | &cross; | &cross; |   -   |
+|Alu_pip3        | &cross; | &cross; |   -   |
+|Rob             | &cross; | &cross; |   -   |
+|Store_mgr       | &cross; | &cross; |   -   |
+|Mem_mgr         | &cross; | &cross; |   -   |
+|Reg_mgr         | &cross; | &cross; |   -   |
