@@ -1,3 +1,4 @@
+`include"../TEMPLATE/Int/Sign_ext.v"
 module Decode 
     #(
         parameter W_AA_REG = 5,
@@ -31,6 +32,9 @@ module Decode
                 // validation
                 output wire DFO_PV_rs,
                 output wire DFO_PV_rt,
+                // fence
+                input wire                 DFO_FR_rf, // fence require
+                input wire[W_PA_REG  -1:0] DFO_FA_rf,
             // CDO ControlData Output
                 // ops
                 output wire[W_PD_POPS -1:0] CDO_PD_piops,
@@ -40,6 +44,7 @@ module Decode
                 output wire[W_AA_REG  -1:0] CDO_AA_rs,
                 output wire[W_AA_REG  -1:0] CDO_AA_rt,
                 output wire[W_AA_INSTR-1:0] CDO_AA_spec,
+                output reg [W_AA_INSTR-1:0] CDO_AA_base,
             // CFO ControlFlow Output
                 output wire                 CFO_PC_book,
         //input
@@ -60,7 +65,10 @@ module Decode
                 input wire[W_PA_REG  -1:0] CDI_PA_rt,
                 // validation
                 input wire                 CDI_PV_rs,
-                input wire                 CDI_PV_rt, 
+                input wire                 CDI_PV_rt,
+                // fence sent
+                input wire                 CDI_FR_rf, // fence require
+                input wire[W_PA_REG  -1:0] CDI_FA_rf, 
             // cfi
                 input wire                 CFI_PC_stall,
                 input wire                 CFI_PC_clear,
@@ -146,6 +154,36 @@ module Decode
     localparam PAR_REQ_NU     = 2'b00;
     localparam PAR_REQ_RS     = 2'b01;
     localparam PAR_REQ_RT     = 2'b10;
+
+    ////////////////////////////////////////////////////////////////////////////////////
+    /////////////// input
+    localparam OP_LD_LB    = 6'b000_000;
+    localparam OP_LD_LH    = 6'b000_001;
+    localparam OP_LD_LW    = 6'b000_010;
+    localparam OP_LD_LBU   = 6'b000_100;
+    localparam OP_LD_LHU   = 6'b000_101;
+    localparam OP_LD_LUI   = 6'b000_011;
+    localparam OP_ST_SB    = 6'b000_000;
+    localparam OP_ST_SH    = 6'b000_001;
+    localparam OP_ST_SW    = 6'b000_010;
+    
+    wire[W_PD_DATA-1:0] sign_ld_st_ext;
+    Sign_ext #(W_PD_DATA,12) d_imm12 (sign_ld_st_ext,  DFO_PD_imm[12-1:0]);
+    always@(*)begin
+        case(CDO_PD_uops)
+            OP_LD_LB,
+            OP_LD_LH,
+            OP_LD_LW,
+            OP_LD_LBU,
+            OP_LD_LHU   : CDO_AA_base <= sign_ld_st_ext;
+            OP_LD_LUI   : CDO_AA_base <= {DFO_PD_imm[20-1:0], {(W_PD_DATA-20){1'b0}}};
+            OP_ST_SB,
+            OP_ST_SH,
+            OP_ST_SW    : CDO_AA_base <= sign_ld_st_ext;
+            default     : CDO_AA_base <= {W_PD_DATA{1'b0}};
+        endcase
+    end
+    ////////////////////////////////////////////////////////////////////////////////////
 
     // slice instruction
     wire[W_AD_OP -1:0]      op     = INSTRUCT[                 W_AD_OP     -1:0              ];
@@ -298,6 +336,9 @@ module Decode
     //assign DFO_PA_cs   = imm12;
     assign DFO_PV_rs   = CDI_PV_rs;
     assign DFO_PV_rt   = CDI_PV_rt;
+
+    assign DFO_FR_rf   = CDI_FR_rf;
+    assign DFO_FA_rf   = CDI_FA_rf;
 
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

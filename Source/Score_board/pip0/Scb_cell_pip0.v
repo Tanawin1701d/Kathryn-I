@@ -1,4 +1,4 @@
-module Scb_cell
+module Scb_cell_pip0
 #(
   parameter W_ident        = 4,// there are 8 cells in each scoreboard but we use 4 bit, remain 1 bit for dump bit 
   parameter unused_cd      = {W_ident{1'b1}},

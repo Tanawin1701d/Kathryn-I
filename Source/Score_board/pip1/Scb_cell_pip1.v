@@ -1,14 +1,15 @@
-module Scb_cell
+module Scb_cell_pip1
 #(
   parameter W_ident        = 4,// there are 8 cells in each scoreboard but we use 4 bit, remain 1 bit for dump bit 
   parameter unused_cd      = {W_ident{1'b1}},
   parameter cell_ident     = 4'b0000,
+  parameter V_pip0         = 2'b01, 
+  parameter V_pip1         = 2'b10,
   parameter W_inused       = 1,
   parameter W_pip          = 2,
   parameter W_PA_rx        = 5,
   parameter W_state        = 7,
-  parameter V_FUT0         = 1, // อีก 1clock ได้ไหม
-  parameter V_FUT1         = 4
+  parameter V_FUT0         = 65 // อีก 1clock ได้ไหม
 )
 (
     ////////////////// output
@@ -50,7 +51,7 @@ module Scb_cell
         /////////////////// output
         assign candit_wb      = {INUSED & (STATE == 0),PIP       ,RD}; // max goal
         assign candit_insert  = {(~INUSED) ? cell_ident :  unused_cd  }; // min goal
-        assign hz_wbs_0       = INUSED && (STATE == V_FUT0);
-        assign hz_wbs_1       = INUSED && (STATE == V_FUT1);
+        assign hz_wbs_0       = (INUSED && (PIP == V_pip0)) || ( INUSED && (PIP == V_pip1) && (STATE == V_FUT0)) ;
+        assign hz_wbs_1       = (INUSED && (PIP == V_pip1)) || ( INUSED && (PIP == V_pip0) && (STATE == V_FUT0));
         
 endmodule

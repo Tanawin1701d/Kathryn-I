@@ -1,6 +1,6 @@
 `include"../../TEMPLATE/Finder/Extream_val.v"
-`include"Scb_cell.v"
-module Scb
+`include"Scb_cell_pip3.v"
+module Scb_pip3
 #(
 /////////////////// address parameter ///////    
     parameter W_PA_REG       = 5,
@@ -28,7 +28,7 @@ module Scb
     parameter W_pip          = 2,
     parameter W_state        = 7,
 /////////////////// excute pip length
-    parameter S_amt_mul      = 4,
+    parameter S_amt_mul      = 1,
     parameter S_amt_ex       = 1
 /////////////////// pip val
 )
@@ -83,7 +83,7 @@ module Scb
                     i_state       <= S_amt_ex-1;
                     addr_insert   <= selected_insert;
                     CDO_PC_selrsv <= V_pip0;
-            end else if ((CDI_PD_uops1 != unused_op) && ( CDI_PC_odr == V_odrf1) && !hz_wbs_1 )begin
+            end else if ((CDI_PD_uops1 != unused_op) && ( CDI_PC_odr == V_odrf1) && !hz_wbs_1 )begin //TODO:
                     i_pip         <= V_pip1;
                     i_rd_a        <= CDI_PD_rd1;
                     i_state       <= S_amt_mul-1;
@@ -126,7 +126,7 @@ module Scb
         generate
             
             for (i = 0; i < S_amt_cell; i = i + 1)begin
-                Scb_cell scb_gen               (candit_wb   [(i+1)*(W_inused + W_pip + W_PA_REG)-1
+                Scb_cell_pip3 scb_gen               (candit_wb   [(i+1)*(W_inused + W_pip + W_PA_REG)-1
                                                             :(i  )*(W_inused + W_pip + W_PA_REG)
                                                             ],
                                                 candit_insert[(i+1)*W_ident-1:

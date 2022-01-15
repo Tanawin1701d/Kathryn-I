@@ -53,6 +53,7 @@ Purpose of Kathryn-I is
 [FLOW_LOGIC_DRAFT_1](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/Flow_Logic.ods)
 - 05/01/2022 reservation for pip0-2 & pip3(only template copy) have been uploaded and fix decoder to support imm csr instruction . [pip](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Reservation_station)-[decoder](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Decode/Decode.v)
 - 09/01/2022 reservation station for pip2(for load store operation) have been upload. [pip](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Reservation_station)
+- 15/01/2022 Score board for pip0,1,3 have been upload , Decoder have been upgraded because fence instruction must be used. [scb](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Score_board) - [decoder](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Decode/Decode.v) (reservation station 2 must be fixed.)
 
 ## To-do List
 | block/doc name |is_built | is_test |comment| 
@@ -65,12 +66,12 @@ Purpose of Kathryn-I is
 |Decoder         | &check; | &cross; |   -   |
 |Rsv0            | &check; | &cross; |   -   |
 |Rsv1            | &check; | &cross; |   -   |
-|Rsv2            | &check; | &cross; |   -   |
+|Rsv2            | &cross; | &cross; |   -   |
 |Rsv3            | &check; | &cross; |   -   |
 |Scb0            | &check; | &cross; |   -   |
-|Scb1            | &cross; | &cross; |   -   |
+|Scb1            | &check; | &cross; |   -   |
 |Scb2            | &cross; | &cross; |   -   |
-|Scb3            | &cross; | &cross; |   -   |
+|Scb3            | &check; | &cross; |   -   |
 |Alu_pip0        | &check; | &cross; |   -   |
 |Alu_pip1        | &check; | &cross; |   -   |
 |Alu_pip2        | &cross; | &cross; |   -   |

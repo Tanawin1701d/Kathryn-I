@@ -1,4 +1,4 @@
-module Scb_cell
+module Scb_cell_pip3
 #(
   parameter W_ident        = 4,// there are 8 cells in each scoreboard but we use 4 bit, remain 1 bit for dump bit 
   parameter unused_cd      = {W_ident{1'b1}},
@@ -8,7 +8,7 @@ module Scb_cell
   parameter W_PA_rx        = 5,
   parameter W_state        = 7,
   parameter V_FUT0         = 1, // อีก 1clock ได้ไหม
-  parameter V_FUT1         = 4
+  parameter V_FUT1         = 1
 )
 (
     ////////////////// output
