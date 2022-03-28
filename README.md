@@ -54,7 +54,7 @@ Purpose of Kathryn-I is
 - 05/01/2022 reservation for pip0-2 & pip3(only template copy) have been uploaded and fix decoder to support imm csr instruction . [pip](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Reservation_station)-[decoder](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Decode/Decode.v)
 - 09/01/2022 reservation station for pip2(for load store operation) have been upload. [pip](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Reservation_station)
 - 15/01/2022 Score board for pip0,1,3 have been upload , Decoder have been upgraded because fence instruction must be used. [scb](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Score_board) - [decoder](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Decode/Decode.v) (reservation station 2 must be fixed.)
-
+- 28/03/2022 block diagram have been fixed(deleted fence). [BLOCK_DESC_FIXED](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/Block_Description.ods)
 ## To-do List
 | block/doc name |is_built | is_test |comment| 
 |----------------|---------|---------|-------|
