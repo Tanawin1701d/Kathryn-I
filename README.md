@@ -25,7 +25,7 @@ Purpose of Kathryn-I is
 - ~~- The processor be able to implement on artix-7(basys-3)~~
 
 ## Block diagram
-![](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/block_diagram3.jpg?raw=true)
+![](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/block_diagram.jpg?raw=true)
 
 
 ## Work log
@@ -55,28 +55,5 @@ Purpose of Kathryn-I is
 - 09/01/2022 reservation station for pip2(for load store operation) have been upload. [pip](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Reservation_station)
 - 15/01/2022 Score board for pip0,1,3 have been upload , Decoder have been upgraded because fence instruction must be used. [scb](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Score_board) - [decoder](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Decode/Decode.v) (reservation station 2 must be fixed.)
 - 28/03/2022 block diagram have been fixed(deleted fence). [BLOCK_DESC_FIXED](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/Block_Description.ods)
-## To-do List
-| block/doc name |is_built | is_test |comment| 
-|----------------|---------|---------|-------|
-|CORE_ctf        | &cross; | &cross; |   -   |
-|BHT             | &cross; | &cross; |   -   |
-|PC_decision     | &cross; | &cross; |   -   |
-|PW_instr        | &cross; | &cross; |   -   |
-|LD_instr        | &cross; | &cross; |   -   |
-|Decoder         | &check; | &cross; |   -   |
-|Rsv0            | &check; | &cross; |   -   |
-|Rsv1            | &check; | &cross; |   -   |
-|Rsv2            | &cross; | &cross; |   -   |
-|Rsv3            | &check; | &cross; |   -   |
-|Scb0            | &check; | &cross; |   -   |
-|Scb1            | &check; | &cross; |   -   |
-|Scb2            | &cross; | &cross; |   -   |
-|Scb3            | &check; | &cross; |   -   |
-|Alu_pip0        | &check; | &cross; |   -   |
-|Alu_pip1        | &check; | &cross; |   -   |
-|Alu_pip2        | &cross; | &cross; |   -   |
-|Alu_pip3        | &cross; | &cross; |   -   |
-|Rob             | &cross; | &cross; |   -   |
-|Store_mgr       | &cross; | &cross; |   -   |
-|Mem_mgr         | &cross; | &cross; |   -   |
-|Reg_mgr         | &cross; | &cross; |   -   |
+- 12/06/2022 DUE TO SYSTEM COMPLEXITY, SO I REDESIGNED BY USING INTERFACES AND NEW STATE DIAGRAMS TO ENCAPSULATE AND CLARIFY THE KATHRYN. [CORE_SPEC](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/core_spec.ods)
+
