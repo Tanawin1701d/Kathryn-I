@@ -56,4 +56,5 @@ Purpose of Kathryn-I is
 - 15/01/2022 Score board for pip0,1,3 have been upload , Decoder have been upgraded because fence instruction must be used. [scb](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Score_board) - [decoder](https://github.com/Tanawin1701d/Kathryn-I/blob/master/Source/Decode/Decode.v) (reservation station 2 must be fixed.)
 - 28/03/2022 block diagram have been fixed(deleted fence). [BLOCK_DESC_FIXED](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/Block_Description.ods)
 - 12/06/2022 DUE TO SYSTEM COMPLEXITY, SO I REDESIGNED BY USING INTERFACES AND NEW STATE DIAGRAMS TO ENCAPSULATE AND CLARIFY THE KATHRYN. [CORE_SPEC](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/core_spec.ods)
+- 17/06/2022 add request interface from decoder to reg management specification [CORE_SPEC](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/core_spec.ods)
 
