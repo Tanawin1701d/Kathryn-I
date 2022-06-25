@@ -57,5 +57,5 @@ Purpose of Kathryn-I is
 - 28/03/2022 block diagram have been fixed(deleted fence). [BLOCK_DESC_FIXED](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/Block_Description.ods)
 - 12/06/2022 DUE TO SYSTEM COMPLEXITY, SO I REDESIGNED BY USING INTERFACES AND NEW STATE DIAGRAMS TO ENCAPSULATE AND CLARIFY THE KATHRYN. [CORE_SPEC](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/core_spec.ods)
 - 17/06/2022 add request interface from decoder to reg management specification [CORE_SPEC](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/core_spec.ods)
-- 23/06/2022 add add commit director specifications and refactor core spec files [CORE_SPEC](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/core_spec.ods)
-
+- 23/06/2022 add commit director interface specifications and refactor core spec files [CORE_SPEC](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/core_spec.ods)
+- 25/06/2022 add control flow and reorder buffer interface specifications and refactor core spec files [CORE_SPEC](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/core_spec.ods)
