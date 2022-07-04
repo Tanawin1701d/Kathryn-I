@@ -1,0 +1,25 @@
+cmake_minimum_required(VERSION 3.21)
+project(generator)
+
+set(CMAKE_CXX_STANDARD 17)
+
+
+
+add_executable(generator
+                main.cpp
+                service/file/file_mgr.h
+                service/file/file_mgr.cpp
+
+        object/genObject.h
+        object/genObject.cpp
+        object/module/module.h
+        object/module/module.cpp
+        object/interface/interface.h
+        object/interface/interface.cpp
+        service/controller/controller.h
+        service/controller/controller.cpp
+ #       ${excelLIB_SRC}
+        object/variable/variable.cpp object/variable/variable.h)
+
+include_directories(            ${PROJECT_SOURCE_DIR}/libxl-4.0.4.0/include_cpp)
+target_link_libraries(generator ${PROJECT_SOURCE_DIR}/libxl-4.0.4.0/lib64/libxl.so)

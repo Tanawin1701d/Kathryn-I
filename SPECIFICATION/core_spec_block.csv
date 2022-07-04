@@ -1,0 +1,126 @@
+DATA_BLOCK,,,,,,,
+block_name,required_Interface,interfaceId,relative_name,other_side_blk_name,other_side_name,original_direction,description
+INSTR_PAGE_WALKER,ST_BLK,G,st,CORE_CONTROL_FLOW,st_INSTR_PAGE_WALKER,yes,provide state of the block
+,CMD_BLK,G,cmd,,cmd_INSTR_PAGE_WALKER,yes,command block
+,TF_PC,TP1,inf_req_pc,,selected_pc,yes,for transfer program counter from core control flow
+,TF_PC,TP1,inf_iss_pc,INSTR_LOADER,selected_pc,no,for transfer program counter to INSTR_LOADER core control flow
+-end-,,,,,,,
+INSTR_LOADER,ST_BLK,G,inf_sb,CORE_CONTROL_FLOW,st_INSTR_LOADER,yes,provide state of the block
+,CMD_BLK,G,inf_cb,,cmd_INSTR_LOADER,,command block
+,TF_PC,TP1,inf_req_pc,INSTR_PAGE_WALKER,inf_iss_pc,,for receive program counter(virtual program counter) from core control flow
+,TF_ARC_INSTR,TRI1,inf_iss_instr,DECODER,arch_instr,yes,for send transfer instruction data to decoder
+-end-,,,,,,,
+DECODER,ST_BLK,G,st,CORE_CONTROL_FLOW,st_DECODER,yes,provide state of the block
+,CMD_BLK,G,cmd,,cmd_INSTR_LOADER,,command block
+,TF_ARC_INSTR,TRI1,arch_instr,INSTR_LOADER,,no,for receive instruction data from instruction loader
+,BC_PREG,G,ud_preg,ROB,bc_preg,yes,this is used for update physical register data
+,COM_REGMNG_CALL,RDR1,res_call,REG_MNG,,no,this represent a protocol that decoder used to book for rob and provide some architecture register 
+,TF_MARC_INSTR,TMI1,decoded_instr,"RSV_1,RSV_2,RSV_3,RSV_4","decoded_instr,decoded_instr,decoded_instr,decoded_instr",yes,port used to broadcast data from decoder to reservation station.
+,CMD_COMMIT_DIRECTOR,G,commit_direct,REG_MNG,dec_direc,yes,use to pass current booking instruction commiting guild to rob
+-end-,,,,,,,
+RSV_1,ST_BLK,G,st,CORE_CONTROL_FLOW,st_RSV_1,yes,provide state of the block
+,CMD_BLK,G,cmd,,cmd_RSV_1,,command block
+,CMD_ROB_FILL,CMF,fill,ROB,fill_cmd_1,yes,interface to communicate with rob for request to fill calculated data from execution units.
+,TF_MARC_INSTR,TMI1,decoded_instr,-end-,,no,decoded instruction derived from decoder.
+,TF_MARC_INSTR,TMI1,execute_instr,"X,MUL_0","input,input",yes,This port is used to broadcast to own execution unit
+-end-,,,,,,,
+RSV_2,ST_BLK,G,st,CORE_CONTROL_FLOW,st_RSV_2,yes,provide state of the block
+,CMD_BLK,G,cmd,,cmd_RSV_2,,command block
+,ST_BLK,G,st_div,DIV,,no,div block status reciever
+,CMD_BLK,G,cmd_div,DIV,,,for control div block
+,CMD_ROB_FILL,CMF,fill,ROB,fill_cmd_2,yes,interface to communicate with rob for request to fill calculated data from execution units.
+,TF_MARC_INSTR,TMI1,decoded_instr,DECODER,,no,decoded instruction derived from decoder.
+,TF_MARC_INSTR,TMI1,execute_instr,DIV,input,yes,This port is used to broadcast to own execution unit
+-end-,,,,,,,
+RSV_3,ST_BLK,G,st,CORE_CONTROL_FLOW,st_RSV_3,yes,provide state of the block
+,CMD_BLK,G,cmd,,cmd_RSV_3,,command block
+,CMD_ROB_FILL,CMF,fill,ROB,fill_cmd_3,yes,interface to communicate with rob for request to fill calculated data from execution units.
+,TF_MARC_INSTR,TMI1,decoded_instr,DECODER,,no,decoded instruction derived from decoder.
+,TF_MARC_INSTR,TMI1,execute_instr,CS,input,yes,This port is used to broadcast to own execution unit
+-end-,,,,,,,
+RSV_4,ST_BLK,G,st,CORE_CONTROL_FLOW,st_RSV_4,yes,provide state of the block
+,CMD_BLK,G,cmd,,cmd_RSV_4,,command block
+,CMD_ROB_FILL,CMF,fill,ROB,fill_cmd_4,yes,interface to communicate with rob for request to fill calculated data from execution units.
+,TF_MARC_INSTR,TMI1,decoded_instr,DECODER,,no,decoded instruction derived from decoder.
+,TF_MARC_INSTR,TMI1,execute_instr,"LOADER,STORE","input,input",yes,This port is used to broadcast to own execution unit
+-end-,,,,,,,
+X,TF_MARC_INSTR,TMI1,input,RSV_1,,no,input data for execution
+,TF_ROB_FILL,ERF1,output,ROB,fill_data_x,yes,output data for execution
+-end-,,,,,,,
+MUL_0,TF_MARC_INSTR,TMI1,input,RSV_2,,no,input data for execution
+,TF_ROB_FILL,ERF1,output,MUL_1,input,yes,output data for execution
+-end-,,,,,,,
+MUL_1,TF_ROB_FILL,ERF1,input,MUL_0,,no,input data for execution
+,TF_ROB_FILL,ERF1,output,MUL_2,input,yes,output data for execution
+-end-,,,,,,,
+MUL_2,TF_ROB_FILL,ERF1,input,MUL_1,,no,input data for execution
+,TF_ROB_FILL,ERF1,output,MUL_3,input,yes,output data for execution
+-end-,,,,,,,
+MUL_3,TF_ROB_FILL,ERF1,input,MUL_2,,no,input data for execution
+,TF_ROB_FILL,ERF1,output,ROB,fill__data_mul3,yes,output data for execution
+-end-,,,,,,,
+DIV,ST_BLK,G,inf_sb,RSV_2,st_div,yes,provide state of the block
+,CMD_BLK,G,inf_cb,,cmd,yes,command block
+,TF_MARC_INSTR,TMI1,input,RSV_2,,no,input data for execution
+,TF_ROB_FILL,ERF1,output,ROB,fill_data_div,yes,output data for execution
+-end-,,,,,,,
+CS,TF_MARC_INSTR,TMI1,input,RSV_3,,no,input data for execution
+,TF_ROB_FILL,ERF1,output,ROB,fill_data_cs,yes,output data for execution
+-end-,,,,,,,
+LOADER,TF_MARC_INSTR,TMI1,input,RSV_4,,no,input data for execution
+,TF_ROB_FILL,ERF1,output,ROB,fill_data_loader,yes,output data for execution
+-end-,,,,,,,
+STORE,TF_MARC_INSTR,TMI1,input,RSV_4,,no,input data for execution
+,TF_ROB_FILL,ERF1,output,ROB,fill__data_store,yes,output data for execution
+-end-,,,,,,,
+REG_MNG,ST_BLK,G,st,CORE_CONTROL_FLOW,st_REG_MNG,yes,provide state of the block
+,CMD_BLK,G,cmd,,cmd_REG_MNG,,command block
+,COM_REGMNG_CALL,RDR1,dec,DECODER,res_call,yes,protocol to communicate with decoder for support decoder to booking reorder buffer.
+,COM_ROB_INIT,RRR1,rob,ROB,instr_init,yes,protocol to allocate resource in rob.
+,BC_PREG,G,brod_preg,ROB,bc_preg,yes,use to update architecture register
+,CMD_COMMIT_DIRECTOR,G,rob_direc,ROB,instr_drt,yes,use to guild rob whether how current booking instruction  should be commit
+,CMD_COMMIT_DIRECTOR,G,dec_direc,DECODER,,no,use to pass current booking instruction commiting guild to rob
+-end-,,,, ,,,
+ROB,ST_BLK,G,st,CORE_CONTROL_FLOW,st_ROB,yes,provide state of the block
+,CMD_BLK,G,cmd,,cmd_ROB,,command block
+,CMD_ROB_FILL,CMF,fill_cmd_1,RSV_1,,no,command to control fill to reorder buffer from resv1
+,TF_ROB_FILL,ERF1,fill_data_x,X,,no,fill data to rob1 (x)
+,TF_ROB_FILL,ERF1,fill__data_mul3,MUL_3,,no,fill data to rob (mul3)
+,CMD_ROB_FILL,CMF,fill_cmd_2,RSV_2,,no,command to control fill to reorder buffer from resv2
+,TF_ROB_FILL,ERF1,fill_data_div,DIV,,no,fill data to rob1 (div)
+,CMD_ROB_FILL,CMF,fill_cmd_3,RSV_3,,no,command to control fill to reorder buffer from resv3
+,TF_ROB_FILL,ERF1,fill_data_cs,CS,,no,fill data to rob1 (cs)
+,CMD_ROB_FILL,CMF,fill_cmd_4,RSV_4,,no,command to control fill to reorder buffer from resv1
+,TF_ROB_FILL,ERF1,fill_data_loader,LOADER,,no,fill data to rob1 (loader)
+,TF_ROB_FILL,ERF1,fill__data_store,STORE,,no,fill data to rob (store)
+,BC_COMMIT,G,st_commit,CORE_CONTROL_FLOW,,no,tell commit status to control flow
+,BC_PREG,G,bc_preg,-bc-,,no,broadcast preg which associate to arcch register
+,COM_ROB_INIT,RRR1,instr_init,REG_MNG,,no,for communicating with register manager to init instruction
+,CMD_COMMIT_DIRECTOR,G,instr_drt,REG_MNG,,no,for recv guild of how to commit instruction
+-end-,,,, ,,,
+CORE_CONTROL_FLOW,ST_BLK,G,st,MASTER,st,yes,provide state of the block
+,CMD_BLK,G,cmd,,cmd,,command block
+,ST_BLK,G,st_INSTR_PAGE_WALKER,INSTR_PAGE_WALKER,,no,provide state of the block
+,CMD_BLK,G,cmd_INSTR_PAGE_WALKER,,,,command block
+,TF_PC,TP1,selected_pc,,,,command pc to instruction loader
+,ST_BLK,G,st_INSTR_LOADER,INSTR_LOADER,,,provide state of the block
+,CMD_BLK,G,cmd_INSTR_LOADER,,,,command block
+,ST_BLK,G,st_DECODER,DECODER,,,provide state of the block
+,CMD_BLK,G,cmd_DECODER,,,,command block
+,ST_BLK,G,st_RSV_1,RSV_1,,,provide state of the block
+,CMD_BLK,G,cmd_RSV_1,,,,command block
+,ST_BLK,G,st_RSV_2,RSV_2,,,provide state of the block
+,CMD_BLK,G,cmd_RSV_2,,,,command block
+,ST_BLK,G,st_RSV_3,RSV_3,,,provide state of the block
+,CMD_BLK,G,cmd_RSV_3,,,,command block
+,ST_BLK,G,st_RSV_4,RSV_4,,,provide state of the block
+,CMD_BLK,G,cmd_RSV_4,,,,command block
+,ST_BLK,G,st_REG_MNG,REG_MNG,,,provide state of the block
+,CMD_BLK,G,cmd_REG_MNG,,,,command block
+,ST_BLK,G,st_ROB,ROB,,,provide state of the block
+,CMD_BLK,G,cmd_ROB,,,,command block
+,BC_COMMIT,G,commit_stat,,,,receive in committing status
+-end-,,,, ,,,
+MASTER,ST_BLK,G,st,CORE_CONTROL_FLOW,,no,provide state of the block
+,CMD_BLK,G,cmd,,,,command block
+-end-,,,, ,,,

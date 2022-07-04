@@ -1,0 +1,4 @@
+/utils/generator/.idea
+/utils/generator/cmake-build-debug
+/utils/generator/libxl-4.0.4.0
+/.vscode
