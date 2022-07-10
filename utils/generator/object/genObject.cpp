@@ -6,8 +6,6 @@
 #include "../service/file/file_mgr.h"
 
 
-namespace generator {
-    namespace object{
+namespace generator::object{
 
     }
-}

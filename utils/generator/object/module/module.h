@@ -7,11 +7,11 @@
 
 #include <string>
 #include <vector>
+#include <utility>
 #include "../genObject.h"
 #include "../interface/interface.h"
 
-namespace generator {
-    namespace object{
+namespace generator::object{
 
 
         struct connector{
@@ -23,12 +23,14 @@ namespace generator {
 
         class module : public genObject{
         private:
-                        // interface and name that use with interface
-            std::vector<connector> interfaces;
-            std::string                                       blockName;
+            // interface and name that use with interface
+            std::vector<connector> connectors;
+            std::string            blockName;
+            std::string    restoreCode(CTF& ctf, enum service::POS pos);
         public :
-            module(std::string modname);
-            generatedDayta genObj() override;
+            explicit module(std::string modname);
+            ~module();
+            generatedDayta genObj( CTF& ctf) override;
             void addLocalInterface(const std::string& con_name, interface* itf, std::string& des);
 
 
@@ -38,7 +40,6 @@ namespace generator {
 
 
     }
-}
 
 
 #endif //GENERATOR_MODULE_H

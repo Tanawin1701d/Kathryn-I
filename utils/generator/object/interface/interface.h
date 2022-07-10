@@ -10,8 +10,7 @@
 #include <cassert>
 
 
-namespace generator {
-    namespace object{
+namespace generator::object{
 
         enum PORT_TYPE{
             logic,
@@ -31,8 +30,9 @@ namespace generator {
             std::string portSize;
 
         public:
+            static const int   varSize = 13; //for only logic[xxx -1: 0]   varsize not include name
             port(PORT_TYPE   input_portType,
-                 interface*       input_inherited_port,
+                 interface*  input_inherited_port,
                  std::string input_portName,
                  std::string description
             );
@@ -43,7 +43,12 @@ namespace generator {
                  std::string portSize
             );
 
-            std::string genPort(); // last comma is true when want , at last of the line
+            std::string genPort(int spacer = 0); //spacer between portname and -1
+            std::string getDesc();
+            int         getPortSizelen();
+            PORT_TYPE   getPortType();
+            int         getMinVarlen();
+
         };
 
         class interface : public genObject{
@@ -52,10 +57,17 @@ namespace generator {
             std::string        interface_id;
             std::vector<port*> ports;
 
+            [[maybe_unused]] std::string    restoreCode(CTF& ctf,
+                                                        enum service::POS pos)
+                                                                { return std::string(); };
+
         public :
             interface(std::string input_interface_name,
                       std::string input_interface_id);
-            generatedDayta genObj() override;
+
+            ~interface();
+
+            generatedDayta genObj( CTF& ctf ) override;
             std::string    genPortSet();
             void           addPort(port* pt);
             std::string    getFinalIntfName();
@@ -72,5 +84,4 @@ namespace generator {
 
 
     }
-}
 #endif //GENERATOR_INTERFACE_H

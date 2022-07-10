@@ -9,8 +9,7 @@
 #include<vector>
 #include"../genObject.h"
 
-namespace generator {
-    namespace object{
+namespace generator::object{
 
 
 
@@ -20,12 +19,13 @@ namespace generator {
             std::string name;
             std::string value;
             std::string des;
+            [[maybe_unused]] std::string    restoreCode(CTF& ctf, enum service::POS pos){};
         public :
             variable(std::string type,
                      std::string name,
                      std::string value,
                      std::string des);
-            generatedDayta genObj() override;
+            generatedDayta genObj(CTF& ctf) override;
 
 
         };
@@ -34,7 +34,6 @@ namespace generator {
 
 
     }
-}
 
 
 

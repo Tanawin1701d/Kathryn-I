@@ -4,23 +4,22 @@
 
 #include "variable.h"
 
-namespace generator{
-    namespace object{
+namespace generator::object{
 
 
         variable::variable(std::string type,
                            std::string name,
                            std::string value,
                            std::string des):
-                           type(std::move(type)),
-                           name(std::move(name)),
+                           type (std::move(type )),
+                           name (std::move(name )),
                            value(std::move(value)),
-                           des(std::move(des))
+                           des  (std::move(des  ))
                            {
                                 // todo sanity check type and value
                            }
 
-        generatedDayta variable::genObj() {
+        generatedDayta variable::genObj(CTF& ctf) {
             generatedDayta gdt;
             gdt.dayta = type + " " + name + " = " + value + ";    //" + des;
             gdt.preDt = "";
@@ -28,4 +27,3 @@ namespace generator{
             return gdt;
         }
     }
-}

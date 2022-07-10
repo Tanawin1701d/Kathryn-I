@@ -19,7 +19,15 @@ add_executable(generator
         service/controller/controller.h
         service/controller/controller.cpp
  #       ${excelLIB_SRC}
-        object/variable/variable.cpp object/variable/variable.h)
+        object/variable/variable.cpp
+        object/variable/variable.h
+        service/ioHelp/ioh.cpp
+        service/ioHelp/ioh.h
+        service/file/codeTransfer.cpp service/file/codeTransfer.h)
+
+add_subdirectory(OpenXLSX)
 
 include_directories(            ${PROJECT_SOURCE_DIR}/libxl-4.0.4.0/include_cpp)
-target_link_libraries(generator ${PROJECT_SOURCE_DIR}/libxl-4.0.4.0/lib64/libxl.so)
+target_link_libraries(generator ${PROJECT_SOURCE_DIR}/libxl-4.0.4.0/lib64/libxl.so
+                                OpenXLSX::OpenXLSX
+        )
