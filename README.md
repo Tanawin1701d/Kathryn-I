@@ -59,3 +59,4 @@ Purpose of Kathryn-I is
 - 17/06/2022 add request interface from decoder to reg management specification [CORE_SPEC](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/core_spec.ods)
 - 23/06/2022 add commit director interface specifications and refactor core spec files [CORE_SPEC](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/core_spec.ods)
 - 25/06/2022 add control flow and reorder buffer interface specifications and refactor core spec files [CORE_SPEC](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/core_spec.ods)
+- 10/07/2022 test generator to generate system verilog file finished [GENERATOR](https://github.com/Tanawin1701d/Kathryn-I/tree/master/utils/generator)
