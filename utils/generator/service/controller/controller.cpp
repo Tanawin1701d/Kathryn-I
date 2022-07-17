@@ -93,7 +93,7 @@ namespace generator::service{
                 std::string portDirect = sheet.cell(cur_row, IV.COL_PORT_DIREC).value();
                 std::string portType   = sheet.cell(cur_row, IV.COL_PORT_TP).value();
                 std::string portName   = sheet.cell(cur_row, IV.COL_PORT_NM).value();
-                std::string portDes    = sheet.cell(cur_row, IV.COL_PORT_DES).value();
+                std::string portDes    = CellToString(sheet.cell(cur_row, IV.COL_PORT_DES).value());
                 std::string portsize   = CellToString(sheet.cell(cur_row, IV.COL_ITF_ID_ST).value());
 
                 if (itf_name == endOfFile){

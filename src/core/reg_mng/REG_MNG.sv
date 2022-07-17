@@ -10,9 +10,9 @@
 
 
 
-module (
+module REG_MNG (
      ST_BLK_G              st,  //provide state of the block
-     CMD_BLK_G             cmd,  //command block
+     CMD_BLK_G             cmd,  //
      COM_REGMNG_CALL_RDR1  dec,  //protocol to communicate with decoder for support decoder to booking reorder buffer.
      COM_ROB_INIT_RRR1     rob,  //protocol to allocate resource in rob.
      BC_PREG_G             brod_preg,  //use to update architecture register

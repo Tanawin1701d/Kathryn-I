@@ -66,8 +66,8 @@ int main(int c, char* argv[]) {
     std::cout << "----------KATHRYN-I rtl file generator(system verilog)----------\n";
     std::cout << "This tool is designed for KATHRYN-I project (2021-2022)\n";
     std::string menu = "please select these below options\n"
-                       "[1] generate entire system(clear user code)\n"
-                       "[2] generate entire system(transfer user code)\n"
+                       "[1] generate entire system(transfer user code)\n"
+                       "[2] generate entire system(clear user code)\n"
                        "[3] help\n"
                        "[4] exit\n"
                        ;

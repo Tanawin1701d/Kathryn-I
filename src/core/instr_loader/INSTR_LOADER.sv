@@ -10,11 +10,11 @@
 
 
 
-module (
+module INSTR_LOADER (
      ST_BLK_G          inf_sb,  //provide state of the block
-     CMD_BLK_G         inf_cb,  //command block
-     TF_PC_TP1         inf_req_pc,  //for receive program counter(virtual program counter) from core control flow
-     TF_ARC_INSTR_TRI1 inf_iss_instr  //for send transfer instruction data to decoder
+     CMD_BLK_G         inf_cb,  //
+     TF_PC_TP1         inf_req_pc,  //
+     TF_ARC_INSTR_TRI1 inf_iss_instr  //
 );
 
 

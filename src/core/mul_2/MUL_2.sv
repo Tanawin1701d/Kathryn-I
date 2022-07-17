@@ -10,7 +10,7 @@
 
 
 
-module (
+module MUL_2 (
      TF_ROB_FILL_ERF1 input,  //input data for execution
      TF_ROB_FILL_ERF1 output  //output data for execution
 );

@@ -10,9 +10,9 @@
 
 
 
-module (
+module MASTER (
      ST_BLK_G  st,  //provide state of the block
-     CMD_BLK_G cmd  //command block
+     CMD_BLK_G cmd  //
 );
 
 

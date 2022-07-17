@@ -28,7 +28,7 @@ namespace generator::object{
 
 
             ///// gen dayta
-            preRet += "module (\n";
+            preRet += "module "+ blockName +" (\n";
 
             for (int interface_num = 0; interface_num < connectors.size(); interface_num++){
                 assert(connectors[interface_num].itf != nullptr);
