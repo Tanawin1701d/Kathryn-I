@@ -11,13 +11,13 @@
 
  
 module DECODER (
-     ST_BLK_G              st,  //provide state of the block
-     CMD_BLK_G             cmd,  //
-     TF_ARC_INSTR_TRI1     arch_instr,  //for receive instruction data from instruction loader
-     BC_PREG_G             ud_preg,  //this is used for update physical register data
-     COM_REGMNG_CALL_RDR1  res_call,  //this represent a protocol that decoder used to book for rob and provide some architecture register 
-     TF_MARC_INSTR_TMI1    decoded_instr,  //port used to broadcast data from decoder to reservation station.
-     CMD_COMMIT_DIRECTOR_G commit_direct  //use to pass current booking instruction commiting guild to rob
+     ST_BLK_G              con_st,  //provide state of the block
+     CMD_BLK_G             con_cmd,  //
+     TF_ARC_INSTR_TRI1     con_arch_instr,  //for receive instruction data from instruction loader
+     BC_PREG_G             con_ud_preg,  //this is used for update physical register data
+     COM_REGMNG_CALL_RDR1  con_res_call,  //this represent a protocol that decoder used to book for rob and provide some architecture register 
+     TF_MARC_INSTR_TMI1    con_decoded_instr,  //port used to broadcast data from decoder to reservation station.
+     CMD_COMMIT_DIRECTOR_G con_commit_direct  //use to pass current booking instruction commiting guild to rob
 );
 
 
@@ -318,51 +318,51 @@ module DECODER (
                           (instr_type == PAR_btype);
     assign ready_preg_r1= (state_preg_r1 == PAR_STATE_SPREG_READY) || (state_preg_r1 == PAR_STATE_SPREG_READY_IDX);
 
-    always @(posedge cmd.c_clock) begin
-        if (cmd.c_reset)begin
+    always @(posedge con_cmd.c_clock) begin
+        if (con_cmd.c_reset)begin
             // case reset 
             state_preg_r1 <= PAR_STATE_SPREG_IDLE;
         end else begin
             // case not reset 
             case (state_preg_r1)
                 PAR_STATE_SPREG_IDLE        :begin 
-                                                if ( cmd.c_enable )begin
+                                                if ( con_cmd.c_enable )begin
                                                     // receive instruction form instruction page walker
                                                     state_preg_r1 <= PAR_STATE_SPREG_REQ;
                                                 end
                                             end
                 PAR_STATE_SPREG_REQ         :begin 
-                                                if (need_preg_r1 && res_call.s_preg_r1)begin
+                                                if (need_preg_r1 && con_res_call.s_preg_r1)begin
                                                     state_preg_r1 <= PAR_STATE_SPREG_READY;
-                                                    s_preg_r1     <= res_call.s_preg_r1;
-                                                    i_preg_r1     <= res_call.i_preg_r1;
-                                                    d_preg_r1     <= res_call.d_preg_r1;
-                                                end else if ( need_preg_r1 && !res_call.s_preg_r1 )begin
+                                                    s_preg_r1     <= con_res_call.s_preg_r1;
+                                                    i_preg_r1     <= con_res_call.i_preg_r1;
+                                                    d_preg_r1     <= con_res_call.d_preg_r1;
+                                                end else if ( need_preg_r1 && !con_res_call.s_preg_r1 )begin
                                                     state_preg_r1 <= PAR_STATE_SPREG_READY_IDX;
-                                                    s_preg_r1     <= res_call.s_preg_r1;
-                                                    i_preg_r1     <= res_call.i_preg_r1;
+                                                    s_preg_r1     <= con_res_call.s_preg_r1;
+                                                    i_preg_r1     <= con_res_call.i_preg_r1;
                                                 end else if ( !need_preg_r1 )begin
                                                     state_preg_r1 <= PAR_STATE_SPREG_READY;
                                                 end
                                             end
                 PAR_STATE_SPREG_READY       :begin 
-                                                if ( !cmd.c_pause )begin
+                                                if ( (!con_cmd.c_pause) && con_st.s_input )begin // didn't pause and all subsystem is ready
                                                     //let it go but what is next state should be
-                                                    if ( cmd.c_enable )
+                                                    if ( con_cmd.c_enable )
                                                         state_preg_r1 <= PAR_STATE_SPREG_REQ;
                                                     else
                                                         state_preg_r1 <= PAR_STATE_SPREG_IDLE;
                                                 end
                                             end
                 PAR_STATE_SPREG_READY_IDX   :begin 
-                                                if ( i_preg_r1 ==  ud_preg.i_preg_rb1)begin
+                                                if ( i_preg_r1 ==  con_ud_preg.i_preg_rb1)begin
                                                     //receive data from broad cast
                                                     state_preg_r1 <= PAR_STATE_SPREG_READY;
                                                     s_preg_r1     <= 1;
-                                                    d_preg_r1     <= ud_preg.d_preg_rb1;
-                                                end else if ( !cmd.c_pause )begin
+                                                    d_preg_r1     <= con_ud_preg.d_preg_rb1;
+                                                end else if ( (!con_cmd.c_pause) && con_st.s_input)begin
                                                     //let it go but what is next state should be
-                                                    if ( cmd.c_enable )
+                                                    if ( con_cmd.c_enable )
                                                         state_preg_r1 <= PAR_STATE_SPREG_REQ;
                                                     else
                                                         state_preg_r1 <= PAR_STATE_SPREG_IDLE;
@@ -379,51 +379,51 @@ module DECODER (
                           (instr_type == PAR_btype);
     assign ready_preg_r2= (state_preg_r2 == PAR_STATE_SPREG_READY) || (state_preg_r2 == PAR_STATE_SPREG_READY_IDX);
 
-    always @(posedge cmd.c_clock) begin
-        if (cmd.c_reset)begin
+    always @(posedge con_cmd.c_clock) begin
+        if (con_cmd.c_reset)begin
             // case reset 
             state_preg_r2 <= PAR_STATE_SPREG_IDLE;
         end else begin
             // case not reset 
             case (state_preg_r2)
                 PAR_STATE_SPREG_IDLE        :begin 
-                                                if ( cmd.c_enable )begin
+                                                if ( con_cmd.c_enable )begin
                                                     // receive instruction form instruction page walker
                                                     state_preg_r2 <= PAR_STATE_SPREG_REQ;
                                                 end
                                             end
                 PAR_STATE_SPREG_REQ         :begin 
-                                                if (need_preg_r2 && res_call.s_preg_r2)begin
+                                                if (need_preg_r2 && con_res_call.s_preg_r2)begin
                                                     state_preg_r2 <= PAR_STATE_SPREG_READY;
-                                                    s_preg_r2     <= res_call.s_preg_r2;
-                                                    i_preg_r2     <= res_call.i_preg_r2;
-                                                    d_preg_r2     <= res_call.d_preg_r2;
-                                                end else if ( need_preg_r2 && !res_call.s_preg_r2 )begin
+                                                    s_preg_r2     <= con_res_call.s_preg_r2;
+                                                    i_preg_r2     <= con_res_call.i_preg_r2;
+                                                    d_preg_r2     <= con_res_call.d_preg_r2;
+                                                end else if ( need_preg_r2 && !con_res_call.s_preg_r2 )begin
                                                     state_preg_r2 <= PAR_STATE_SPREG_READY_IDX;
-                                                    s_preg_r2     <= res_call.s_preg_r2;
-                                                    i_preg_r2     <= res_call.i_preg_r2;
+                                                    s_preg_r2     <= con_res_call.s_preg_r2;
+                                                    i_preg_r2     <= con_res_call.i_preg_r2;
                                                 end else if ( !need_preg_r2 )begin
                                                     state_preg_r2 <= PAR_STATE_SPREG_READY;
                                                 end
                                             end
                 PAR_STATE_SPREG_READY       :begin 
-                                                if ( !cmd.c_pause )begin
+                                                if ( (!con_cmd.c_pause) && con_st.s_input  )begin
                                                     //let it go but what is next state should be
-                                                    if ( cmd.c_enable )
+                                                    if ( con_cmd.c_enable )
                                                         state_preg_r2 <= PAR_STATE_SPREG_REQ;
                                                     else
                                                         state_preg_r2 <= PAR_STATE_SPREG_IDLE;
                                                 end
                                             end
                 PAR_STATE_SPREG_READY_IDX   :begin 
-                                                if ( i_preg_r2 ==  ud_preg.i_preg_rb1)begin
+                                                if ( i_preg_r2 ==  con_ud_preg.i_preg_rb1)begin
                                                     //receive data from broad cast
                                                     state_preg_r2 <= PAR_STATE_SPREG_READY;
                                                     s_preg_r2     <= 1;
-                                                    d_preg_r2     <= ud_preg.d_preg_rb1;
-                                                end else if ( !cmd.c_pause )begin
+                                                    d_preg_r2     <= con_ud_preg.d_preg_rb1;
+                                                end else if ( (!con_cmd.c_pause) && con_st.s_input  )begin
                                                     //let it go but what is next state should be
-                                                    if ( cmd.c_enable )
+                                                    if ( con_cmd.c_enable )
                                                         state_preg_r2 <= PAR_STATE_SPREG_REQ;
                                                     else
                                                         state_preg_r2 <= PAR_STATE_SPREG_IDLE;
@@ -439,25 +439,25 @@ module DECODER (
                               (instr_type == PAR_jtype);
     assign ready_preg_rd= (state_preg_rd == PAR_STATE_DPREG_READY);
 
-    always @(posedge cmd.c_clock)begin
-        if (cmd.c_reset)begin
+    always @(posedge con_cmd.c_clock)begin
+        if (con_cmd.c_reset)begin
             state_preg_rd <= PAR_STATE_DPREG_IDLE;
         end else begin
             case(state_preg_rd)
             PAR_STATE_DPREG_IDLE:begin
-                                        if (cmd.c_enable)begin
+                                        if (con_cmd.c_enable)begin
                                             state_preg_rd <= PAR_STATE_DPREG_REQ;
                                         end
                                 end
             PAR_STATE_DPREG_REQ:begin
-                                        if (res_call.s_req_status)begin
+                                        if (con_res_call.s_req_status)begin
                                             i_preg_rd <= i_preg_rd;
                                             state_preg_rd <= PAR_STATE_DPREG_READY;
                                         end
                                 end
             PAR_STATE_DPREG_READY:begin
-                                        if (!cmd.c_pause)begin
-                                            if (cmd.c_enable) begin
+                                        if (!con_cmd.c_pause)begin
+                                            if (con_cmd.c_enable) begin
                                                 state_preg_rd <= PAR_STATE_DPREG_REQ;
                                             end else begin
                                                 state_preg_rd <= PAR_STATE_DPREG_IDLE;
@@ -469,13 +469,13 @@ module DECODER (
     end
 // io connect
     //st_blk
-    assign st.s_input = (st.s_output   && (!cmd.c_pause)) ||(   ( state_preg_r1 == PAR_STATE_SPREG_IDLE )
+    assign con_st.s_input = (con_st.s_output   && (!con_cmd.c_pause)) ||(   ( state_preg_r1 == PAR_STATE_SPREG_IDLE )
                                                              && ( state_preg_r2 == PAR_STATE_SPREG_IDLE )
                                                              && ( state_preg_rd == PAR_STATE_DPREG_IDLE ));
-    assign st.s_output= ready_preg_r1 && ready_preg_r2  && ready_preg_rd;
-    // arch_instr
-    always @((posedge cmd.c_clock) && cmd.c_enable) begin 
-        d_ainstr    <= arch_instr.d_instr; 
+    assign con_st.s_output= ready_preg_r1 && ready_preg_r2  && ready_preg_rd;
+    // con_arch_instr
+    always @((posedge con_cmd.c_clock) && con_cmd.c_enable) begin 
+        d_ainstr    <= con_arch_instr.d_instr; 
         
         i_apc.i_pc  <= arch_pc.i_pc;
         i_apc.i_pvl <= arch_pc.i_pvl;
@@ -485,33 +485,33 @@ module DECODER (
         
     end
     // res call
-    assign res_call.i_areg_rd = i_preg_rd;
-    assign res_call.i_areg_r1 = i_preg_r1;
-    assign res_call.i_areg_r2 = i_areg_r2;
-    assign res_call.c_req     = (state_preg_rd == PAR_STATE_DPREG_REQ);
-    assign res_call.i_spec_pc = i_apc_spec.pc ; // upgrade this to remem state
-    assign res_call.i_spec_pvl= i_apc_spec.pvl;  // upgrade this to remem state
-    assign res_call.i_pip     = i_pip;
-    assign res_call.c_op      = c_op;
-    // decoded_instr
-    assign decoded_instr.i_preg_rd          = i_preg_rd;
-    assign decoded_instr.i_preg_r1          = i_preg_r1;
-    assign decoded_instr.i_preg_r2          = i_preg_r2;
-    assign decoded_instr.s_preg_r1          = s_preg_r1;
-    assign decoded_instr.s_preg_r2          = s_preg_r2;
-    assign decoded_instr.d_preg_r1          = d_preg_r1;
-    assign decoded_instr.d_preg_r2          = d_preg_r2;
-    assign decoded_instr.d_imm              = d_ainstr ;
-    assign decoded_instr.i_creg_r1          = 0        ;
-    assign decoded_instr.i_pip              = i_pip    ;
-    assign decoded_instr.c_op               = c_op     ;
+    assign con_res_call.i_areg_rd = i_preg_rd;
+    assign con_res_call.i_areg_r1 = i_preg_r1;
+    assign con_res_call.i_areg_r2 = i_areg_r2;
+    assign con_res_call.c_req     = (state_preg_rd == PAR_STATE_DPREG_REQ);
+    assign con_res_call.i_spec_pc = i_apc_spec.pc ; // upgrade this to remem state
+    assign con_res_call.i_spec_pvl= i_apc_spec.pvl;  // upgrade this to remem state
+    assign con_res_call.i_pip     = i_pip;
+    assign con_res_call.c_op      = c_op;
+    // con_decoded_instr
+    assign con_decoded_instr.i_preg_rd          = i_preg_rd;
+    assign con_decoded_instr.i_preg_r1          = i_preg_r1;
+    assign con_decoded_instr.i_preg_r2          = i_preg_r2;
+    assign con_decoded_instr.s_preg_r1          = s_preg_r1;
+    assign con_decoded_instr.s_preg_r2          = s_preg_r2;
+    assign con_decoded_instr.d_preg_r1          = d_preg_r1;
+    assign con_decoded_instr.d_preg_r2          = d_preg_r2;
+    assign con_decoded_instr.d_imm              = d_ainstr ;
+    assign con_decoded_instr.i_creg_r1          = 0        ;
+    assign con_decoded_instr.i_pip              = i_pip    ;
+    assign con_decoded_instr.c_op               = c_op     ;
     assign decoded_isntr.PC.i_pc            = i_apc.i_pc;
     assign decoded_isntr.PC.i_pvl           = i_apc.i_pvl;
     // commit director
-    commit_direct.c_store                   = (instr_type == PAR_op_store);
-    commit_direct.c_load                    = (instr_type == PAR_op_load);
-    commit_direct.c_ptoa_reg                = (instr_type == PAR_op_r) ||
-                                              (instr_type == PAR_op_imm) ||
+    assign con_commit_direct.c_store                   = (instr_type == PAR_op_store);
+    assign con_commit_direct.c_load                    = (instr_type == PAR_op_load);
+    assign con_commit_direct.c_ptoa_reg                = (instr_type == PAR_op_r) ||
+                                                     (instr_type == PAR_op_imm);
 
     // to do for now privilege is not set and branch is not assign to commit director
 
