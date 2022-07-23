@@ -456,7 +456,7 @@ module DECODER (
                                         end
                                 end
             PAR_STATE_DPREG_READY:begin
-                                        if (!con_cmd.c_pause)begin
+                                        if ((!con_cmd.c_pause) && con_st.s_input)begin
                                             if (con_cmd.c_enable) begin
                                                 state_preg_rd <= PAR_STATE_DPREG_REQ;
                                             end else begin
