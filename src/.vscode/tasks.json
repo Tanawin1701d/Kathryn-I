@@ -10,7 +10,7 @@
             "args": [
                 "-sv", "--language", "1800-2012",
                 "--lint-only",
-                "${workspaceFolder}/core/decoder/*.sv"
+                "${workspaceFolder}/core/decoder/DECODER.sv"
             ],
             "problemMatcher": [
                 "$verilator-error", "$verilator-warning"

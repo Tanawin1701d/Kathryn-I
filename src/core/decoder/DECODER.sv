@@ -1,5 +1,3 @@
-`include "../interface/INTERFACE.sv"
-`include "../var/VARIABLE.sv"
 
 
 
@@ -9,15 +7,17 @@
 
 
 
- 
+
 module DECODER (
-     ST_BLK_G              con_st,  //provide state of the block
-     CMD_BLK_G             con_cmd,  //
-     TF_ARC_INSTR_TRI1     con_arch_instr,  //for receive instruction data from instruction loader
-     BC_PREG_G             con_ud_preg,  //this is used for update physical register data
-     COM_REGMNG_CALL_RDR1  con_res_call,  //this represent a protocol that decoder used to book for rob and provide some architecture register 
-     TF_MARC_INSTR_TMI1    con_decoded_instr,  //port used to broadcast data from decoder to reservation station.
-     CMD_COMMIT_DIRECTOR_G con_commit_direct  //use to pass current booking instruction commiting guild to rob
+     ST_BLK_G              st,  //provide state of the block
+     CMD_BLK_G             cmd,  //
+     TF_ARC_INSTR_TRI1     arch_instr,  //for receive instruction data from instruction loader
+     BC_PREG_G             ud_preg,  //this is used for update physical register data
+     COM_REGMNG_CALL_RDR1  res_call,  //this represent a protocol that decoder used to book for rob and provide some architecture register 
+     TF_MARC_INSTR_TMI1    decoded_instr,  //port used to broadcast data from decoder to reservation station.
+     CMD_COMMIT_DIRECTOR_G commit_direct,  //use to pass current booking instruction commiting guild to rob
+     TF_PC_TP1             arch_pc,  //receive pc from instr loader
+     TF_PC_TP1             arch_spec_pc  //receive pc from instr loader
 );
 
 
@@ -204,7 +204,7 @@ module DECODER (
             PAR_op_store,        
             PAR_op_misc_mem     : begin  i_pip <= PAR_LSPIP; end
             PAR_op_system       : begin  i_pip <= PAR_CPIP;  end
-            defaults            : begin  i_pip <= PAR_NONPIP;end
+            default             : begin  i_pip <= PAR_NONPIP;end
         endcase
     end
 // indicate micro ops
@@ -527,6 +527,7 @@ endmodule
 //$DECODER_POST
 
 //@DECODER_POST
+
 
 
 

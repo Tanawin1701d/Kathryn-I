@@ -1,5 +1,3 @@
-`include "../interface/INTERFACE.sv"
-`include "../var/VARIABLE.sv"
 
 
 
@@ -14,7 +12,9 @@ module INSTR_LOADER (
      ST_BLK_G          inf_sb,  //provide state of the block
      CMD_BLK_G         inf_cb,  //
      TF_PC_TP1         inf_req_pc,  //
-     TF_ARC_INSTR_TRI1 inf_iss_instr  //
+     TF_ARC_INSTR_TRI1 inf_iss_instr,  //
+     TF_PC_TP1         iss_pc,  //send pc to decoder
+     TF_PC_TP1         iss_spec_pc  //send spec pc to decoder
 );
 
 

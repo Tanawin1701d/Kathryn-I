@@ -23,6 +23,9 @@ int I_BL_MARC_PIP = 3;    //size of index to identify execute pipes
 int I_BL_EX_PIP = 3;    //size of index to identify execution pips in connected in each reservation station.
 
 
+int I_N_EX_PIP = 8;    //Max number of execution pips in connected in each reservation station.
+
+
 int I_BL_TRAPC = 8;    //size of bit length to specify trap cause
 
 

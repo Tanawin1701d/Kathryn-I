@@ -1,5 +1,3 @@
-`include "../interface/INTERFACE.sv"
-`include "../var/VARIABLE.sv"
 
 
 

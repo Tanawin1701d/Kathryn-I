@@ -37,9 +37,9 @@ namespace generator::service{
         void
         file_mgr::genAllWriteDayta() {
 
-            for (auto path : includePaths){
-                dayta += "`include \"" + path + "\"\n";
-            }
+//            for (auto path : includePaths){
+//                dayta += "`include \"" + path + "\"\n";
+//            }
 
             for(object::genObject* goPtr: objs){
                 object::generatedDayta gd = goPtr->genObj(ctf);

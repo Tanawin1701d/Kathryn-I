@@ -90,10 +90,10 @@ namespace generator::object{
         generatedDayta interface::genObj( CTF& ctf ) {
             generatedDayta gdRet;
             std::string preResult;
-            preResult = "interface " + getFinalIntfName()+ " ();\n";
+            preResult = "typedef struct packed {\n";
             preResult += genPortSet();
             preResult += "\n";
-            preResult += "endinterface";
+            preResult += "} " + getFinalIntfName() + ";";
 
             gdRet.dayta  = preResult;
             gdRet.preDt  = "/////////////////////////////////////\n\n\n/////////////////////////////////////";
@@ -119,7 +119,7 @@ namespace generator::object{
 
             for (int port_id = 0; port_id < ports.size(); port_id++){
                 preResult += "      " + ports[port_id]->genPort(expectSize)
-                           + ((port_id ==(ports.size()-1)) ? "  ":" ,")+" //"
+                           + ";//"
                            + service::SanizDesc(ports[port_id]->getDesc())+"\n";
             }
 
