@@ -9,15 +9,15 @@
 
 
 module DECODER (
-     ST_BLK_G              st,  //provide state of the block
-     CMD_BLK_G             cmd,  //
-     TF_ARC_INSTR_TRI1     arch_instr,  //for receive instruction data from instruction loader
-     BC_PREG_G             ud_preg,  //this is used for update physical register data
-     COM_REGMNG_CALL_RDR1  res_call,  //this represent a protocol that decoder used to book for rob and provide some architecture register 
-     TF_MARC_INSTR_TMI1    decoded_instr,  //port used to broadcast data from decoder to reservation station.
-     CMD_COMMIT_DIRECTOR_G commit_direct,  //use to pass current booking instruction commiting guild to rob
-     TF_PC_TP1             arch_pc,  //receive pc from instr loader
-     TF_PC_TP1             arch_spec_pc  //receive pc from instr loader
+     ST_BLK_G              con_st,  //provide state of the block
+     CMD_BLK_G             con_cmd,  //
+     TF_ARC_INSTR_TRI1     con_arch_instr,  //for receive instruction data from instruction loader
+     BC_PREG_G             con_ud_preg,  //this is used for update physical register data
+     COM_REGMNG_CALL_RDR1  con_res_call,  //this represent a protocol that decoder used to book for rob and provide some architecture register 
+     TF_MARC_INSTR_TMI1    con_decoded_instr,  //port used to broadcast data from decoder to reservation station.
+     CMD_COMMIT_DIRECTOR_G con_commit_direct,  //use to pass current booking instruction commiting guild to rob
+     TF_PC_TP1             con_arch_pc,  //receive pc from instr loader
+     TF_PC_TP1             con_arch_spec_pc  //receive pc from instr loader
 );
 
 
@@ -25,34 +25,34 @@ module DECODER (
 //$DECODER
 //constant_var
     // decode opcode_type type
-    localparam PAR_op_r          = 7'b01_100_11;
-    localparam PAR_op_rm         = 7'b01_100_11;
+    localparam PAR_op_r          = 7'b01_100_11; // same op hazard
+    localparam PAR_op_rm         = 7'b01_100_11; // same-^
     localparam PAR_op_imm        = 7'b00_100_11;
     localparam PAR_op_branch     = 7'b11_000_11;
     localparam PAR_op_auipc      = 7'b00_101_11;
     localparam PAR_op_jal        = 7'b11_011_11;
     localparam PAR_op_jalr       = 7'b11_001_11;
-    localparam PAR_op_rd         = 7'b01_100_11;
+    localparam PAR_op_rd         = 7'b01_100_11; // same-^
     localparam PAR_op_load       = 7'b00_000_11;
     localparam PAR_op_lui        = 7'b01_101_11;
     localparam PAR_op_store      = 7'b01_000_11;
     localparam PAR_op_misc_mem   = 7'b00_011_11;
     localparam PAR_op_system     = 7'b11_100_11;
-
+    // special case of decoder
     localparam PAR_op_r_exc      =  7'b01_000_00;
     localparam PAR_op_rm_exc     =  7'b00_000_01; // rd so
-    localparam PAR_op_imm        =  7'b01_000_00;
-    localparam PAR_op_rd_exc     =  7'b00_000_01;
-    localparam PAR_op_system_exc = 12'b0000_0000_0001;
+    localparam PAR_op_imm_exc    =  7'b01_000_00; // SRAI instruction
+    localparam PAR_op_rd_exc     =  7'b00_000_01; // divider
+    localparam PAR_op_system_exc = 12'b0000_0000_0001; // ebreak so ecall use 0
     // micro op
-    localparam PAR_W_mops        =  6;
-    localparam PAR_W_mops_pref   =  3;
-    localparam PAR_W_mops_suf    =  3;
-    // extend op
-    localparam PAR_op_r1      = 7'b0000000;
-    localparam PAR_op_r2      = 7'b0100000;
-    localparam PAR_op_rmd     = 7'b0000001;
-    localparam PAR_op_rd      = 3'd4;
+    localparam PAR_W_mops        =  D_BL_MARC_OP; // micro opcode length -----v
+    localparam PAR_W_mops_pref   =  3; // micro opcode prefix 3 upper bit
+    localparam PAR_W_mops_suf    =  3; // micro opcode suffix 3 lower bit
+    // // extend op
+    // localparam PAR_op_r1      = 7'b0000000;
+    // localparam PAR_op_r2      = 7'b0100000;
+    // localparam PAR_op_rmd     = 7'b0000001;
+    //localparam PAR_op_rd      = 3'd4;
     // instrution type
     localparam PAR_W_INSTR_T  = 3; 
     localparam PAR_rtype      = 3'b000;
@@ -65,7 +65,7 @@ module DECODER (
     // instruction slicer
      
     localparam PAR_W_opcode   = 7;
-        localparam PAR_W_rx   = I_BL_ARC_REG;
+    localparam PAR_W_rx       = I_BL_ARC_REG;
     localparam PAR_W_funct7   = 7;
     localparam PAR_W_funct3   = 3;
     localparam PAR_W_imm12    = 12;
@@ -108,19 +108,6 @@ module DECODER (
     localparam PAR_STATE_DPREG_REQ       = 2'b01;
     localparam PAR_STATE_DPREG_READY     = 2'b10;
 
-
-
-    ////////////////////////////////////////////////////////////////////////////////////
-    /////////////// input
-    localparam OP_LD_LB    = 6'b000_000;
-    localparam OP_LD_LH    = 6'b000_001;
-    localparam OP_LD_LW    = 6'b000_010;
-    localparam OP_LD_LBU   = 6'b000_100;
-    localparam OP_LD_LHU   = 6'b000_101;
-    localparam OP_LD_LUI   = 6'b000_011;
-    localparam OP_ST_SB    = 6'b000_000;
-    localparam OP_ST_SH    = 6'b000_001;
-    localparam OP_ST_SW    = 6'b000_010;
     ////////////////////////////////////////////////////////////////////////////////////
 // slice the raw architecture instruction
     reg[D_BL_ARC_INSTR   -1:0] d_ainstr; // raw architecture dayta in this cycle
@@ -164,7 +151,7 @@ module DECODER (
     always_comb begin
         case ( ainstr_opcode ) 
         PAR_op_r,
-        PAR_op_rm,
+        PAR_op_rm,           // It won't violate due to same rtype
         PAR_op_rd           : begin instr_type <= PAR_rtype; end // rtype
         PAR_op_imm,
         PAR_op_jalr,
@@ -188,9 +175,9 @@ module DECODER (
             PAR_op_branch,
             PAR_op_auipc,
             PAR_op_jal,
-            PAR_op_jalr         : begin 
-                                        // seperate div type
-                                        if ( (ainstr_imm_11_5 == PAR_op_rm_exc) && (ainstr_funct3 >= 3'd4) )
+            PAR_op_jalr         : begin  
+                                        // seperate div type                                    // v-----------multiplier use same imm11:5 with div
+                                        if ( (ainstr_opcode == PAR_op_r) && (ainstr_imm_11_5 == PAR_op_rm_exc) && (ainstr_funct3 >= 3'd4) )
                                         begin
                                             i_pip <= PAR_DPIP;
                                         end else begin
@@ -213,10 +200,10 @@ module DECODER (
             PAR_op_r               :begin   
                                             if (ainstr_imm_11_5 == PAR_op_r_exc)begin
                                                 uops_up <= 3'b001;
-                                                uops_dw <= (ainstr_funct3 == 3'b000) ? 3'd4: 3'd5;
-                                            end else if ( ainstr_imm_11_5 == PAR_op_rm_exc ) begin
+                                                uops_dw <= (ainstr_funct3 == 3'b000) ? 3'd4: 3'd5; // 3'b000 for sub
+                                            end else if ( ainstr_imm_11_5 == PAR_op_rm_exc ) begin // for multiple and div
                                                 uops_up <= 3'b001;
-                                            uops_dw <= ainstr_funct3;
+                                                uops_dw <= ainstr_funct3;
                                             end else begin
                                                 uops_up <= 3'b000;
                                                 uops_dw <= ainstr_funct3;
@@ -227,7 +214,7 @@ module DECODER (
             //                                 uops_dw <= ainstr_funct3;
             //                         end
             PAR_op_imm             :begin   
-                                            if (ainstr_funct7 ==PAR_op_rm_exc)begin
+                                            if (ainstr_funct7 == PAR_op_imm_exc)begin
                                                 uops_up <= 3'b011;
                                                 uops_dw <= 3'd2;
                                             end else begin
@@ -281,7 +268,7 @@ module DECODER (
                                             end
                                             
                                     end
-            defaults               :begin
+            default                :begin
                                         // no-op   
                                          uops_up <= 3'b000;
                                          uops_dw <= 3'b000;   
@@ -316,7 +303,7 @@ module DECODER (
                           (instr_type == PAR_itype) ||
                           (instr_type == PAR_stype) ||
                           (instr_type == PAR_btype);
-    assign ready_preg_r1= (state_preg_r1 == PAR_STATE_SPREG_READY) || (state_preg_r1 == PAR_STATE_SPREG_READY_IDX);
+    assign ready_preg_r1= (state_preg_r1 == PAR_STATE_SPREG_READY) || ((state_preg_r1 == PAR_STATE_SPREG_READY_IDX) && (i_preg_r1 != con_ud_preg.i_preg_rb1));
 
     always @(posedge con_cmd.c_clock) begin
         if (con_cmd.c_reset)begin
@@ -343,10 +330,11 @@ module DECODER (
                                                     i_preg_r1     <= con_res_call.i_preg_r1;
                                                 end else if ( !need_preg_r1 )begin
                                                     state_preg_r1 <= PAR_STATE_SPREG_READY;
+                                                    s_preg_r1     <= 1'b1;
                                                 end
                                             end
                 PAR_STATE_SPREG_READY       :begin 
-                                                if ( (!con_cmd.c_pause) && con_st.s_input )begin // didn't pause and all subsystem is ready
+                                                if ( (!con_cmd.c_pause) && con_st.s_input )begin // didn't pause and all subsystem is ready otherwise this section will be freeze
                                                     //let it go but what is next state should be
                                                     if ( con_cmd.c_enable )
                                                         state_preg_r1 <= PAR_STATE_SPREG_REQ;
@@ -358,7 +346,7 @@ module DECODER (
                                                 if ( i_preg_r1 ==  con_ud_preg.i_preg_rb1)begin
                                                     //receive data from broad cast
                                                     state_preg_r1 <= PAR_STATE_SPREG_READY;
-                                                    s_preg_r1     <= 1;
+                                                    s_preg_r1     <= 1'b1;
                                                     d_preg_r1     <= con_ud_preg.d_preg_rb1;
                                                 end else if ( (!con_cmd.c_pause) && con_st.s_input)begin
                                                     //let it go but what is next state should be
@@ -377,7 +365,7 @@ module DECODER (
     assign need_preg_r2 = (instr_type == PAR_rtype) ||
                           (instr_type == PAR_stype) ||
                           (instr_type == PAR_btype);
-    assign ready_preg_r2= (state_preg_r2 == PAR_STATE_SPREG_READY) || (state_preg_r2 == PAR_STATE_SPREG_READY_IDX);
+    assign ready_preg_r2= (state_preg_r2 == PAR_STATE_SPREG_READY) || ( (state_preg_r2 == PAR_STATE_SPREG_READY_IDX) && (i_preg_r2 != con_ud_preg.i_preg_rb1)  );
 
     always @(posedge con_cmd.c_clock) begin
         if (con_cmd.c_reset)begin
@@ -404,6 +392,8 @@ module DECODER (
                                                     i_preg_r2     <= con_res_call.i_preg_r2;
                                                 end else if ( !need_preg_r2 )begin
                                                     state_preg_r2 <= PAR_STATE_SPREG_READY;
+                                                    s_preg_r2     <= 1'b1;
+
                                                 end
                                             end
                 PAR_STATE_SPREG_READY       :begin 
@@ -456,7 +446,7 @@ module DECODER (
                                         end
                                 end
             PAR_STATE_DPREG_READY:begin
-                                        if ((!con_cmd.c_pause) && con_st.s_input)begin
+                                        if ((!con_cmd.c_pause) && con_st.s_input)begin  // not pause and all subsystem is ready
                                             if (con_cmd.c_enable) begin
                                                 state_preg_rd <= PAR_STATE_DPREG_REQ;
                                             end else begin
@@ -477,17 +467,17 @@ module DECODER (
     always @((posedge con_cmd.c_clock) && con_cmd.c_enable) begin 
         d_ainstr    <= con_arch_instr.d_instr; 
         
-        i_apc.i_pc  <= arch_pc.i_pc;
-        i_apc.i_pvl <= arch_pc.i_pvl;
+        i_apc.i_pc  <= con_arch_pc.i_pc;
+        i_apc.i_pvl <= con_arch_pc.i_pvl;
 
-        i_apc_spec.pc  <= arch_spec_pc.i_pc;
-        i_apc_spec.pvl <= arch_spec_pc.i_pvl;
+        i_apc_spec.pc  <= con_arch_spec_pc.i_pc;
+        i_apc_spec.pvl <= con_arch_spec_pc.i_pvl;
         
     end
     // res call
-    assign con_res_call.i_areg_rd = i_preg_rd;
-    assign con_res_call.i_areg_r1 = i_preg_r1;
-    assign con_res_call.i_areg_r2 = i_areg_r2;
+    assign con_res_call.i_areg_rd = ainstr_rd;
+    assign con_res_call.i_areg_r1 = ainstr_r1;
+    assign con_res_call.i_areg_r2 = ainstr_r2;
     assign con_res_call.c_req     = (state_preg_rd == PAR_STATE_DPREG_REQ);
     assign con_res_call.i_spec_pc = i_apc_spec.pc ; // upgrade this to remem state
     assign con_res_call.i_spec_pvl= i_apc_spec.pvl;  // upgrade this to remem state
@@ -505,15 +495,19 @@ module DECODER (
     assign con_decoded_instr.i_creg_r1          = 0        ;
     assign con_decoded_instr.i_pip              = i_pip    ;
     assign con_decoded_instr.c_op               = c_op     ;
-    assign decoded_isntr.PC.i_pc            = i_apc.i_pc;
-    assign decoded_isntr.PC.i_pvl           = i_apc.i_pvl;
+    assign con_decoded_instr.PC.i_pc            = i_apc.i_pc;
+    assign con_decoded_instr.PC.i_pvl           = i_apc.i_pvl;
     // commit director
     assign con_commit_direct.c_store                   = (instr_type == PAR_op_store);
-    assign con_commit_direct.c_load                    = (instr_type == PAR_op_load);
-    assign con_commit_direct.c_ptoa_reg                = (instr_type == PAR_op_r) ||
-                                                     (instr_type == PAR_op_imm);
+    assign con_commit_direct.c_load                    = (instr_type == PAR_op_load) ||
+                                                         (instr_type == PAR_op_lui);
+    assign con_commit_direct.c_ptoa_reg                = (ainstr_opcode == PAR_op_r) ||
+                                                         (ainstr_opcode == PAR_op_imm) ||
+                                                         (ainstr_opcode == PAR_op_auipc) ||
+                                                         (ainstr_opcode == PAR_op_jal) ||
+                                                         (ainstr_opcode == PAR_op_jalr);
 
-    // to do for now privilege is not set and branch is not assign to commit director
+    // TODO for now privilege is not set and branch is not assign to commit director
 
     
 //@DECODER
