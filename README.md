@@ -61,4 +61,6 @@ Purpose of Kathryn-I is
 - 17/07/2022 draft new decoder [DECODER](https://github.com/Tanawin1701d/Kathryn-I/tree/master/src/core/decoder)
 
 - 24/07/22 design decoder,rsv and rob specification [CORE_SPEC](https://1drv.ms/u/s!AkU-NTsj4vkJwz0SSvnzZAP8YSQY?e=W1C6hY)
-- 07/07/22 design one hot free list + scoreboard rom + fix decoder bug [FREE_LIST](https://github.com/Tanawin1701d/Kathryn-I/blob/master/src/lib/freeList/)-[SCB_ROM](https://github.com/Tanawin1701d/Kathryn-I/blob/master/src/core/rsv_1/)
+- 07/08/22 design one hot free list + scoreboard rom + fix decoder bug [FREE_LIST](https://github.com/Tanawin1701d/Kathryn-I/blob/master/src/lib/freeList/)-[SCB_ROM](https://github.com/Tanawin1701d/Kathryn-I/blob/master/src/lib/scb_stable/)
+
+- 08/08/22 drafing scoreboard cell and scoreboard communication [SCB_CELL](https://github.com/Tanawin1701d/Kathryn-I/blob/master/src/lib/scb_stable/)
