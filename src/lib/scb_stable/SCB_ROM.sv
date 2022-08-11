@@ -1,8 +1,8 @@
 typedef struct packed{
-    logic                    used;
-    logic                    stable;
-    logic[I_BL_EX_PIP -1:0]  pipId;
-    logic[I_BL_EX_UNIT-1:0]  IndexAmt; // amount of block in related excecuted pipe -1
+    logic                    used;     //output
+    logic                    stable;   //output
+    logic[I_BL_EX_PIP -1:0]  pipId;    //input
+    logic[I_BL_EX_UNIT-1:0]  IndexAmt; //output // amount of block in related excecuted pipe -1
 } PIPEINFO;
 
 

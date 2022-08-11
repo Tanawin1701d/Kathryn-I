@@ -21,6 +21,12 @@ typedef struct packed{
 }COM_SCBREQ_STABLE;
 
 
+typedef struct packed{
+    logic[I_BL_EX_PIP-1:   0]   insert_pip; //insert pip is implicit 0 for unwanted pipe
+    logic[I_BL_MARC_REG-1: 0]   i_preg_rd;
+} CMD_ROB_FILL;
+
+
 
 
 module SCB #
@@ -28,15 +34,40 @@ module SCB #
     parameter RSV_ID =  3'b0// I_BL_MARC_PIP 3
 )
 (
-    // TODO for now we not sure that what we will connect to
+    COM_SCBREQ_STABLE con_req; // to request scb entry and rsv will issue/broadcast instruction to execute unit directly
+    CMD_ROB_FILL      con_cmd_fill;// scoreboard tell reorder buffer that which pipe should store to
+
 )
 
-localparam AMT_CELL = I_N_EX_PIP*I_BL_EX_UNIT;
+localparam AMT_CELL = I_N_EX_PIP*I_BL_EX_UNIT + 1;
 
 SCBCELL_STABLE [AMT_CELL-1:0] scbTable;
 
 
 
+// check wheather there is tracked instruction which must commit in next concecutive posedge
+genvar i;
+for (i = 0; i < AMT_CELL; i++)begin
+    if (scbTable[i].valid && ( scbTable[i].index == {I_BL_EX_UNIT{1'b0}}) )begin
+        assign con_cmd_fill.insert_pip = scbTable[i].pipe_id;
+        assign con_cmd_fill.i_preg_rd  = scbTable[i].i_preg_rd;
+    end
+end
+
+// check can instruction issue now. for now we can assume that there are enough space to track instr
+  //declare scoreboard rom
+  PIPEINFO pip_info; 
+  assign pip_info.pipId = con_req.search_pip;
+  ScbRom(pip_info);
+
+
+logic[I_BL_EX_UNIT-1] i_preNew_index;
+
+
+
+
+
+// save new instruction of we need
 
     
 

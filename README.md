@@ -64,3 +64,6 @@ Purpose of Kathryn-I is
 - 07/08/22 design one hot free list + scoreboard rom + fix decoder bug [FREE_LIST](https://github.com/Tanawin1701d/Kathryn-I/blob/master/src/lib/freeList/)-[SCB_ROM](https://github.com/Tanawin1701d/Kathryn-I/blob/master/src/lib/scb_stable/)
 
 - 08/08/22 drafing scoreboard cell and scoreboard communication [SCB_CELL](https://github.com/Tanawin1701d/Kathryn-I/blob/master/src/lib/scb_stable/)
+
+- 11/08/22 drafing stable scoerboard [SCB]
+(https://github.com/Tanawin1701d/Kathryn-I/blob/master/src/lib/scb_stable/)
