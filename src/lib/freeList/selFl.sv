@@ -18,7 +18,7 @@ module selFl
     assign internal_output[0] = 1'b0;
 
     genvar i;
-    for (i = 1; i <= SIZE; i++) begin
+    for (i = 1; i <= SIZE; i = i + 1) begin
         assign is_prev_used   [i] = (  is_prev_used[i-1]  | internal_input[i] );
         assign internal_output[i] = ((~is_prev_used[i-1]) & internal_input[i] );
     end
