@@ -1,5 +1,19 @@
+#util ignore
 /utils/generator/.idea
 /utils/generator/cmake-build-debug
 /utils/generator/libxl-4.0.4.0
 /utils/generator/OpenXLSX
 /.vscode
+
+#playground ignore
+/playground/.bsp
+/playground/project
+/playground/.target
+/playground/.test_run_dir
+
+
+#mainsource ignore
+/source/.bsp
+/source/project
+/source/.target
+/source/.test_run_dir
