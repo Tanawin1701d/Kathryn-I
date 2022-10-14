@@ -8,12 +8,12 @@
 #playground ignore
 /playground/.bsp
 /playground/project
-/playground/.target
-/playground/.test_run_dir
+/playground/target
+/playground/test_run_dir
 
 
 #mainsource ignore
 /source/.bsp
 /source/project
-/source/.target
-/source/.test_run_dir
+/source/target
+/source/test_run_dir
