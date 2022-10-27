@@ -16,6 +16,7 @@ namespace generator::service {
     std::string repeatStr(const std::string& raw, int times);
     void        check_that(bool condition, const std::string& place, const std::string& cause);
     void        SanizDirPath(std::string& path);
+    bool        isInt(std::string input);
 }
 
 #endif //GENERATOR_IOH_H

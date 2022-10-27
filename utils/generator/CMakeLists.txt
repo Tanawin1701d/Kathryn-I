@@ -14,8 +14,8 @@ add_executable(generator
         object/genObject.cpp
         object/module/module.h
         object/module/module.cpp
-        object/interface/interface.h
-        object/interface/interface.cpp
+        object/bundle/bundle.h
+        object/bundle/bundle.cpp
         service/controller/controller.h
         service/controller/controller.cpp
  #       ${excelLIB_SRC}
@@ -23,7 +23,10 @@ add_executable(generator
         object/variable/variable.h
         service/ioHelp/ioh.cpp
         service/ioHelp/ioh.h
-        service/file/codeTransfer.cpp service/file/codeTransfer.h)
+        service/file/codeTransfer.cpp
+        service/file/codeTransfer.h
+        object/variable/nestvar.cpp
+        object/variable/nestvar.h)
 
 add_subdirectory(OpenXLSX)
 

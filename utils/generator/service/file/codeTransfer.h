@@ -13,21 +13,36 @@ namespace generator::service{
 
     static const std::string STARTTAG_PREFIX = "//$";
     static const std::string STOPTAG_PREFIX  = "//@";
-    static const std::string STARTTAG_PRE_SUFFIX  = "_PRE";
-    static const std::string STOPTAG_POST_SUFFIX  = "_POST";
+    static const std::string POS_PRE_SUFFIX  = "_PRE";
+    static const std::string POS_POST_SUFFIX  = "_POST";
     const int CODETAG_SIZE = 3; //  "//$" or "//@"
-
-    struct codedayta{
-        std::string start_tag;
-        std::string stop_tag;
-        std::string code;
-    };
+    // implicit rule is  STARTTAG_PREFIX + blockname + pos suffix
+    // implicit rule is  STOPTAG_PREFIX  + blockname + pos suffix
 
     enum POS{
         PRE,
         MID,
         POS
     };
+
+
+    class codeTransfer;
+    class codedayta{
+
+    public:
+        std::string start_tag;
+        std::string stop_tag;
+        std::string code;
+        codedayta(std::string keyName, enum POS pos);
+        codedayta(std::string _start_tag,
+                  std::string _stop_tag,
+                  std::string _code
+                  );
+        std::string finalize(codeTransfer& ctf);
+
+    };
+
+
 
 class codeTransfer{
 private:

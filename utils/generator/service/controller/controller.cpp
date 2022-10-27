@@ -9,9 +9,11 @@
 
 namespace generator::service{
 
-        controller::controller(std::string input_prefix_path,
+        controller::controller(std::string input_GlobalName,
+                               std::string input_prefix_path,
                                std::string spec_path,
                                bool trans):
+        GlobalName(input_GlobalName),
         transferUserSpace(trans),
         is_variable_built(false),
         is_interfaces_built(false),
@@ -21,17 +23,18 @@ namespace generator::service{
         prefix_path(std::move(input_prefix_path)),
         spec_path(std::move(spec_path))
         {
-            std::cout << "[kathryn-I@generator] : controller for "+ this->spec_path+ " is starting up" +"\n";
+            nest_obj_name = GlobalName + "_var";
+            std::cout << "[kathryn-I@generator] : controller for "+ this->spec_path + " is starting up" +"\n";
         }
 
         controller::~controller() {
             for (auto dt: variables){
                 delete dt;
             }
-            for (auto dt: interfaces){
+            for (const auto& dt: bundles){
                 delete dt.second;
             }
-            for (auto dt: modules){
+            for (const auto& dt: modules){
                 delete dt.second;
             }
             for (auto dt: files){
@@ -54,99 +57,112 @@ namespace generator::service{
                 if (group == endOfFile){
                     break;
                 }else if(group.empty()){
-                    variables.push_back(new object::variable(type, name, value, des));
-                }
+                    //TODO for now we support only scala int type
+                    variables.push_back(new object::variable(object::VARTYP::UINT, name, value, des));
+                } // else case -end-
                 cur_row++;
             }
-
-
+            // for now we use Global name as a var object
+            nest_variable = new object::nestvar(nest_obj_name);
         }
 
         void
-        controller::build_interfaces(OpenXLSX::XLWorksheet& sheet) {
-            int cur_row = IV.ROW_START;
+        controller::build_bundle(OpenXLSX::XLWorksheet& sheet) {
+            int cur_row = BV.ROW_START;
             bool maskAskUnused = false;
             while(true){
-                std::string itf_name  = sheet.cell(cur_row, IV.COL_ITF_NAME ).value();
-                std::string itf_id    = CellToString(sheet.cell(cur_row, IV.COL_ITF_ID_ST).value());
+                std::string bundle_name  = sheet.cell(cur_row, BV.COL_ITF_NAME ).value();
+                std::string bundle_id    = CellToString(sheet.cell(cur_row, BV.COL_ITF_ID_ST).value());
 
-                if (itf_name == endOfFile){
+                if (bundle_name == endOfFile){
                     break;
-                }else if ( (!itf_name.empty()) && (!(itf_name == normalEnd)) ){
-                    if ( itf_id != IV.unused) {
-                        object::interface *newItf = new object::interface(itf_name, itf_id);
-                        std::string finalName = newItf->getFinalIntfName();
-                        interfaces.insert({finalName, newItf});
+                }else if ( (!bundle_name.empty()) && (!(bundle_name == normalEnd)) ){
+                    if ( bundle_id != BV.unused) {
+                        object::bundle *newBundle = new object::bundle(bundle_name, bundle_id);
+                        std::string finalName = newBundle->getFinalBundleName();
+                        bundles.insert({finalName, newBundle});
                     }
                 }
                 cur_row++;
             }
 
-            cur_row = IV.ROW_START;
-            std::string buf_itf_name;
-            std::string buf_itf_id;
+            cur_row = BV.ROW_START;
+            std::string  buf_bundle_name;
+            std::string  buf_bundle_id;
+            object::bundle* buf_bundle;
             maskAskUnused = false;
 
             while(true){
-                std::string itf_name   = sheet.cell(cur_row, IV.COL_ITF_NAME).value();
-                std::string itf_id     = CellToString(sheet.cell(cur_row, IV.COL_ITF_ID_ST).value());
-                std::string portDirect = sheet.cell(cur_row, IV.COL_PORT_DIREC).value();
-                std::string portType   = sheet.cell(cur_row, IV.COL_PORT_TP).value();
-                std::string portName   = sheet.cell(cur_row, IV.COL_PORT_NM).value();
-                std::string portDes    = CellToString(sheet.cell(cur_row, IV.COL_PORT_DES).value());
-                std::string portsize   = CellToString(sheet.cell(cur_row, IV.COL_ITF_ID_ST).value());
+                std::string bundle_name   = sheet.cell(cur_row, BV.COL_ITF_NAME).value();
+                std::string bundle_id     = CellToString(sheet.cell(cur_row, BV.COL_ITF_ID_ST).value());
+                std::string portDirect    = sheet.cell(cur_row, BV.COL_PORT_DIREC).value();
+                std::string portType      = sheet.cell(cur_row, BV.COL_PORT_TP).value();
+                std::string portName      = sheet.cell(cur_row, BV.COL_PORT_NM).value();
+                std::string portDes       = CellToString(sheet.cell(cur_row, BV.COL_PORT_DES).value());
+                std::string portsize      = CellToString(sheet.cell(cur_row, BV.COL_ITF_ID_ST).value());
 
-                if (itf_name == endOfFile){
+                if (bundle_name == endOfFile){
                     break;
-                }else if ( (!itf_name.empty()) && (!(itf_name == normalEnd)) ){ //in case interface name
-                    buf_itf_name = itf_name;
-                    buf_itf_id   = itf_id  ;
-                    maskAskUnused= false;
-                    if (buf_itf_id == IV.unused){
+                }else if ( (!bundle_name.empty()) && (!(bundle_name == normalEnd)) ){ //in case interface name
+                    ///mark for header
+                    buf_bundle_name = bundle_name;
+                    buf_bundle_id   = bundle_id  ;
+
+                    ///case unused
+                    if (buf_bundle_id == BV.unused){
                         maskAskUnused = true;
+                    }else{
+                        /// get bundle for port inserting
+                        std::string final_bd = object::bundle::getFinalBundleName(buf_bundle_name, buf_bundle_id);
+                        assert( bundles.find(final_bd) != bundles.end());
+                        buf_bundle = bundles[final_bd];
+                        maskAskUnused= false;
                     }
-                }else if (itf_name.empty() && (!maskAskUnused)){ //incase this this is port section or interface section
-                    if (portType == "logic"){
-                        interfaces[object::interface::getFinalIntfName(buf_itf_name,buf_itf_id)]
-                        ->addPort(new object::port( object::PORT_TYPE::logic,
-                                                       portName,
-                                                           portDes,
-                                                             portsize
-                                                       )
-                                 );
-                    }else if (portType != "logic"){
-                        // sanity check whether there are inherit interface
 
-                        check_that(interfaces.find(object::interface::getFinalIntfName(portType, itf_id)) !=
-                                   interfaces.end(),
-                                   "interfaceRetriver",
-                                   object::interface::getFinalIntfName(portType, itf_id) + "wasn't built"
+                }else if (bundle_name.empty() && (!maskAskUnused)){ //incase this this is port section or interface section
+                    ///case there is normal port and the bundle is usesd
+                    object::port* pt;
+                    if ( portType == BV.wireType ){
+                         pt = new object::port(
+                                portDirect == BV.port_direct_out ?
+                                object::PORT_TYPE::OUTPUT:
+                                object::PORT_TYPE::INPUT,
+                                portDes,
+                                portsize, // aka port_size due to same field
+                                nest_obj_name,
+                                service::isInt(portsize) ?
+                                object::PORT_SIZE_TYP::VALUE:
+                                object::PORT_SIZE_TYP::DEFAULT_VAR
+                                );
+                    }else{
+                        std::string refer_bd_n = object::bundle::getFinalBundleName(portType, bundle_id);// aka port_size due to same field
+                        assert(bundles.find(refer_bd_n) != bundles.end());
+                        pt = new object::port(
+                                portDirect == BV.port_direct_flip ?
+                                object::PORT_TYPE::FLIPPED_BUNDLE :
+                                object::PORT_TYPE::BUNDLE,
+                                bundles[refer_bd_n],
+                                portDes
                         );
-
-                        interfaces[object::interface::getFinalIntfName(buf_itf_name,buf_itf_id)]
-                        ->addPort(new object::port(object::PORT_TYPE::inherit,
-                                                    interfaces[object::interface::getFinalIntfName(portType,itf_id)],
-                                                       portName,
-                                                           portDes
-                                                       )
-                                 );
                     }
-                }
+                    buf_bundle->addPort(portName, pt);
+                } /// case there is unused sections, header section or end of module section
                 cur_row++;
 
             }
-
         }
 
         void
         controller::build_modules(OpenXLSX::XLWorksheet& sheet) {
             int cur_row = MV.ROW_START;
             std::string buf_blkName;
+            object::module* buf_module;
 
             while (true){
                 std::string blkName     = sheet.cell(cur_row, MV.COL_BLK_NAME).value();
-                std::string itf_name    = sheet.cell(cur_row, MV.COL_ITF_NAME).value();
-                std::string itf_id      = sheet.cell(cur_row, MV.COL_ITF_ID  ).value();
+                std::string bundle_name = sheet.cell(cur_row, MV.COL_ITF_NAME).value();
+                std::string bundle_id   = sheet.cell(cur_row, MV.COL_ITF_ID  ).value();
+                std::string con_direc   = sheet.cell(cur_row, MV.COL_CON_DIREC).value();
                 std::string con_name    = sheet.cell(cur_row, MV.COL_CON_NAME).value();
                 std::string con_des     = sheet.cell(cur_row, MV.COL_CON_DES ).value();
 
@@ -154,15 +170,18 @@ namespace generator::service{
                 if (blkName == endOfFile){
                     break;
                 }else if ( ((!blkName.empty()) &&  (blkName != normalEnd)) || blkName.empty() ){
+                    ///    ^------------ case that is block name              ^--------case this is one of bundle list
                     if ( (!blkName.empty()) &&  (blkName != normalEnd) ){
                         buf_blkName = blkName;
-                        modules.insert({buf_blkName, new object::module(blkName)});
+                        buf_module = new object::module(blkName);
+                        modules.insert({buf_blkName, buf_module});
                     }
-                    modules[buf_blkName]->addLocalInterface(con_name,
-                                                            interfaces[object::interface::getFinalIntfName(itf_name,itf_id)],
-                                                            con_des
-                                                            );
-                    // todo build other side to make main core link together
+                    std::string con_bundle_name = object::bundle::getFinalBundleName(bundle_name, bundle_id);
+                    assert(bundles.find(con_bundle_name) != bundles.end());
+                    assert(con_direc == "yes" || con_direc == "no");
+                    bool isflip = con_direc == "yes";
+                    /// insert bundle to sub
+                    buf_module->addBundle(con_name, bundles[con_bundle_name], isflip, con_des);
                 }
                 cur_row++;
             }
@@ -173,33 +192,35 @@ namespace generator::service{
             // todo this version assume one file per module and us unified interface and variable
             int cur_row = FV.ROW_START;
             while(true){
-                std::string objectName  = sheet.cell(cur_row, FV.COL_OBJECT)   .value();
-                std::string objectType  = sheet.cell(cur_row, FV.COL_TYPE)     .value();
-                std::string objectPath  = sheet.cell(cur_row, FV.COL_PATH)     .value();
-                std::string objectFname = sheet.cell(cur_row, FV.COL_FILE_NAME).value();
-                std::string incPath     = CellToString(sheet.cell(cur_row, FV.COL_INCD_1).value());
-                std::string incPath2    = CellToString(sheet.cell(cur_row, FV.COL_INCD_2).value());
+                std::string objectName    = sheet.cell(cur_row, FV.COL_OBJECT)   .value();
+                std::string objectType    = sheet.cell(cur_row, FV.COL_TYPE)     .value();
+                std::string objectPath    = sheet.cell(cur_row, FV.COL_PATH)     .value();
+                std::string objectFname   = sheet.cell(cur_row, FV.COL_FILE_NAME).value();
+                std::string objectPackage = CellToString(sheet.cell(cur_row, FV.COL_PACKAGE).value());
+                std::string incPath1      = CellToString(sheet.cell(cur_row, FV.COL_INC1).value());
+                std::string incPath2      = CellToString(sheet.cell(cur_row, FV.COL_INC2).value());
                 if ( objectName == endOfFile ){
                     break;
                 }
 
-                file_mgr* newFile = new file_mgr(prefix_path,
-                                                      objectPath,
-                                                   objectFname);
+                file_mgr* newFile = new file_mgr(prefix_path, // path to prject directory
+                                                      objectPath, // path to file's folder
+                                                   objectFname); // file name
 
-                if (!incPath.empty())  newFile->addIncludePath(incPath );
+                if (!incPath1.empty())  newFile->addIncludePath(incPath1 );
                 if (!incPath2.empty()) newFile->addIncludePath(incPath2);
 
-                if ( objectType == FV.itf ){
-                    for (auto & interface : interfaces){
-                        newFile->addgenObj(interface.second);
+                if ( objectType == FV.bun ){
+                    for (auto & bd : bundles){
+                        newFile->addgenObj(bd.second);
                     }
-                }else if ( objectType == FV.var ){
+                }
+                else if ( objectType == FV.var ){
                     for (auto & varia : variables){
                         newFile->addgenObj(varia);
                     }
-
-                }else if ( objectType == FV.blk ){
+                }
+                else if ( objectType == FV.blk ){
                     //sanity check in case block not found
                     assert(modules.find(objectName) != modules.end());
                     newFile->addgenObj(modules[objectName]);
@@ -246,7 +267,7 @@ namespace generator::service{
 //            assert( moduleSheet    != nullptr );
 //            assert( objInfoSheet   != nullptr );
             std::cout << "[kathryn-I@generator] : start retrieve interfaces ...\n";
-            build_interfaces(interfaceSheet);
+            build_bundle(interfaceSheet);
             std::cout << "[kathryn-I@generator] : start retrieve variable ....\n";
             build_variables (variableSheet );
             std::cout << "[kathryn-I@generator] : start retrieve modules ... \n";

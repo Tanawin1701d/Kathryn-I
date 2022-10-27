@@ -9,29 +9,25 @@
 #include <vector>
 #include <utility>
 #include "../genObject.h"
-#include "../interface/interface.h"
+#include "../bundle/bundle.h"
 
 namespace generator::object{
 
 
-        struct connector{
-         std::string name; //connection name
-         interface*  itf;
-         std::string des;
-        };
-
-
         class module : public genObject{
         private:
-            // interface and name that use with interface
-            std::vector<connector> connectors;
-            std::string            blockName;
+            bundle*        io_bundle;
+            std::string    blockName;
             std::string    restoreCode(CTF& ctf, enum service::POS pos);
         public :
             explicit module(std::string modname);
             ~module();
             generatedDayta genObj( CTF& ctf) override;
-            void addLocalInterface(const std::string& con_name, interface* itf, std::string& des);
+            void addBundle(const std::string& input_portName,
+                           bundle* nextBundle,
+                           bool isflip,
+                           const std::string& description
+                           );
 
 
         };

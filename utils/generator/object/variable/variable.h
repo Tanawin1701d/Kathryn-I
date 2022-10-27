@@ -12,16 +12,17 @@
 namespace generator::object{
 
 
+        enum VARTYP  { UINT } ;
 
         class variable : public genObject{
         private:
-            std::string type;
+            VARTYP      type; // for now we hard code to Uint
             std::string name;
             std::string value;
             std::string des;
             [[maybe_unused]] std::string    restoreCode(CTF& ctf, enum service::POS pos){};
         public :
-            variable(std::string type,
+            variable(VARTYP      type,
                      std::string name,
                      std::string value,
                      std::string des);

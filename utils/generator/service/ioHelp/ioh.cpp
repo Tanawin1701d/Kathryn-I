@@ -62,4 +62,10 @@ namespace generator::service {
         }
     }
 
+    bool isInt(std::string input){
+        //TODO we use only detect variable or number so, we might use regex to test
+        //string
+        return (input.size() > 0) && (input[0] >= '0') && (input[0] <= '9');
+    }
+
 }

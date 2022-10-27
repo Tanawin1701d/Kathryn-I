@@ -22,28 +22,34 @@ namespace generator::service{
 
         class file_mgr{
         private:
+            /// path
             std::ofstream* desfile;
             std::ifstream* oldfile;
-            std::string prefix_path = "../../../../src/"; //   t/d/
+            std::string prefix_path = "../../../../"; //   t/d/
             std::string path; //  src/   source not necessarily include
-            std::string pathToFile;
             std::string fileName;
+            std::string pathToFile; // this is processed value
+            /// all processed content
             std::string dayta;
+            /// raw content
             std::vector< object::genObject* > objs;
             codeTransfer   ctf;
+            /// specify data for each file
             std::vector< std::string> includePaths;
+            std::string packageName;
+
 
         public:
-            file_mgr(std::string  input_prefix_path = "../../../../src/",
-                     std::string  input_path = "", //  src/   source not necessarily include
-                     std::string  input_fileName   = "defaultFile.txt");
+            explicit file_mgr(std::string  input_prefix_path = "../../../../src/",
+                              std::string  input_path = "", //  src/   source not necessarily include
+                              std::string  input_fileName   = "defaultFile.txt");
             void addgenObj(object::genObject* obj);
             void genAllWriteDayta();
             void write();
             void readCodeTag();
             std::string read();
             void addIncludePath(std::string includePath);
-
+            void addPackageName(const std::string& pc_str);
         };
 
     }

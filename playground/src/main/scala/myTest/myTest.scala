@@ -4,11 +4,12 @@ package tanawinTest
 import chisel3._
 
 object cv{
-    val convar = 1.U
+    val convar = 1.U 
+    val dddd   = 1
 }
 
 class myBundle2 extends Bundle{
-    val y = Output(UInt(1.W))
+    val y = Output(UInt(cv.dddd.W))
 }
 
 class myBundle extends Bundle{
@@ -36,7 +37,7 @@ class int1 extends Module{
 class int2 extends Module{
     val io = IO(Flipped(new internalB))
     val gf = 1.U
-    io.x := cv.convar
+    io.x := cv.dddd.U
     //val gg = IO(new internalB)
     
 }

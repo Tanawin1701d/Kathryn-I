@@ -103,4 +103,8 @@ namespace generator::service{
         file_mgr::addIncludePath(std::string includePath){
             includePaths.push_back(includePath);
         }
+
+    void file_mgr::addPackageName(const std::string &pc_str) {
+        packageName = pc_str;
     }
+}

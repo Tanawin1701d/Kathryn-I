@@ -7,11 +7,11 @@
 namespace generator::object{
 
 
-        variable::variable(std::string type,
+        variable::variable(VARTYP      type,
                            std::string name,
                            std::string value,
                            std::string des):
-                           type (std::move(type )),
+                           type (type),
                            name (std::move(name )),
                            value(std::move(value)),
                            des  (std::move(des  ))
@@ -21,7 +21,8 @@ namespace generator::object{
 
         generatedDayta variable::genObj(CTF& ctf) {
             generatedDayta gdt;
-            gdt.dayta = type + " " + name + " = " + value + ";    //" + des;
+            //TODO for now we support only uint
+            gdt.dayta = "val " + name + " = " + value + " //" + des;
             gdt.preDt = "";
             gdt.postDt= "";
             return gdt;
