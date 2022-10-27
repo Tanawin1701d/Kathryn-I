@@ -23,10 +23,21 @@ Purpose of Kathryn-I is
 - ~~- The processor be able to implement on artix-7(basys-3)~~
 
 ## Block diagram
+---
 ![](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/block_diagram.jpg?raw=true)
 
 
 ## Work log
+
+
+---
+
+- 27/10/2022 chisel3 code generator has been draft. [util](https://github.com/https://github.com/Tanawin1701d/Kathryn-I/tree/util_chisel3/utils/generator)
+
+
+## log below is retired due to language change and refactoring so, links be not be able to use.
+
+
 - 14/10/2021 drafted block specification have been uploaded. [SPEC_DRAFT_1](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/old/Block_Description.ods)
 - 03/11/2021 register manager(decoder and rob communication) of block specification file have been uploaded. [SPEC_DRAFT_1](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/old/Block_Description.ods)
 - 03/11/2021 block diagram have been uploaded. [BLOCK_DIAGRAM](https://github.com/Tanawin1701d/Kathryn-I/blob/master/SPECIFICATION/old/block_diagram.png)
