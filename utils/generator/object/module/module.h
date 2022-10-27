@@ -16,8 +16,9 @@ namespace generator::object{
 
         class module : public genObject{
         private:
-            bundle*        io_bundle;
-            std::string    blockName;
+            const std::string IO_VAR_NAME = "io";
+            bundle*           io_bundle;
+            std::string       blockName;
             std::string    restoreCode(CTF& ctf, enum service::POS pos);
         public :
             explicit module(std::string modname);

@@ -37,9 +37,11 @@ namespace generator::service{
         void
         file_mgr::genAllWriteDayta() {
 
-//            for (auto path : includePaths){
-//                dayta += "`include \"" + path + "\"\n";
-//            }
+            dayta = "package " + packageName + "\n";
+            dayta += "import chisel3._\n";
+            for (auto path : includePaths){
+                dayta += "import " + path + "\n";
+            }
 
             for(object::genObject* goPtr: objs){
                 object::generatedDayta gd = goPtr->genObj(ctf);

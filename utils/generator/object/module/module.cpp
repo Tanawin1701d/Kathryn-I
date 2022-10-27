@@ -11,13 +11,17 @@ namespace generator::object{
     module::restoreCode(CTF &ctf, enum service::POS pos ) {
 
         CTD cached(blockName, pos);
+        if ((pos == service::POS::MID) && (!ctf.areThereCode(cached.start_tag))){
+            cached.code = io_bundle->genInitAssignStr(IO_VAR_NAME);
+            return cached.finalize();
+        }
         return cached.finalize(ctf);
     }
 
     module::module(std::string modname):
                         io_bundle(new bundle(blockName, "io")),
                         blockName(std::move(modname)) {
-        /// block name is ${blockName}_io
+        /// bundle for each module name  is ${blockName}_io
     }
 
 

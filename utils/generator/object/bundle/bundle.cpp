@@ -39,7 +39,8 @@ namespace generator::object{
         portSizeType = input_portSizeType;
     }
 
-    std::string port::genPort() {
+    std::string
+    port::genPort() {
 
         std::string preRet;
         if ( (portType == INPUT) || (portType == OUTPUT)){
@@ -62,6 +63,25 @@ namespace generator::object{
         return preRet + service::SanizDesc(description);
     }
 
+    std::vector<initoutput>
+    port::genInitAssign(const std::string& prefix, bool flip) { // with name
+        switch (portType) {
+            case PORT_TYPE::INPUT :
+                //return flip ?  {{prefix, "0"}} : {};
+                if (flip)
+                    return {{prefix, "0"}};
+                else
+                    return {};
+            case PORT_TYPE::OUTPUT :
+                if (flip)
+                    return {};
+                else
+                    return {{prefix, "0"}};
+            default :
+                return inherited_port->genInitAssign(prefix, flip ^  (portType == PORT_TYPE::FLIPPED_BUNDLE) );
+        }
+    }
+
     std::string port::getDesc() {
         return description;
     }
@@ -71,7 +91,9 @@ namespace generator::object{
     }
 
 
-/// interface ///////////////////////////////////////////////////////////////
+
+
+/// bundle  ///////////////////////////////////////////////////////////////
 
         std::string
         bundle::restoreCode(CTF& ctf, enum service::POS pos){
@@ -85,6 +107,12 @@ namespace generator::object{
                 bundle_name(std::move(input_bundle_name)),
                 bundle_id  (std::move(input_bundle_id  ))
         {}
+
+        bundle::~bundle() {
+        for (const auto& dt: ports){
+            delete dt.port_ptr;
+        }
+    }
 
         generatedDayta bundle::genObj(CTF& ctf ) {
             generatedDayta gdRet;
@@ -100,12 +128,6 @@ namespace generator::object{
             gdRet.postDt = "/////////////////////////////////////\n\n\n/////////////////////////////////////";
 
             return gdRet;
-        }
-
-        bundle::~bundle() {
-            for (const auto& dt: ports){
-                delete dt.port_ptr;
-            }
         }
 
         std::string bundle::genPortSet() {
@@ -128,6 +150,36 @@ namespace generator::object{
             return preResult;
         }
 
+        std::vector<initoutput> bundle::genInitAssign(const std::string &prefix, bool flip) {
+
+            std::vector<initoutput> pre_ret;
+            for (portNameMap& pnm: ports){
+                assert(pnm.port_ptr);
+                auto cur_assign = pnm.port_ptr->genInitAssign(prefix+"."+pnm.name, flip);
+                pre_ret.insert(pre_ret.end(), cur_assign.begin(), cur_assign.end());
+            }
+            return pre_ret;
+        }
+
+        /// this function is only used by module to init assign sections.
+        std::string bundle::genInitAssignStr(const std::string &prefix) {
+            ///// initialize variable
+            std::string pre_ret;
+            size_t mfx = 0;
+            auto assigningEntry = genInitAssign(prefix, false);
+            /////
+            // find maximum of full port name
+            for (auto& pt_gen: assigningEntry){
+                mfx = std::max(pt_gen.fullPathWire.length(), mfx );
+            }
+            for (auto& pt_gen: assigningEntry){
+                pre_ret += pt_gen.gen((int)mfx) + "\n";
+            }
+            return pre_ret;
+
+        }
+
+
         void bundle::addPort(std::string input_portName, port* input_port_ptr) {
             service::check_that(input_port_ptr != nullptr, "add port", "nullptr port");
             ports.push_back({std::move(input_portName), input_port_ptr});
@@ -136,6 +188,8 @@ namespace generator::object{
         std::string bundle::getFinalBundleName() {
             return bundle_name + "_" + bundle_id;
         }
+
+
 
 /////////////////////////////////////////////////
 }

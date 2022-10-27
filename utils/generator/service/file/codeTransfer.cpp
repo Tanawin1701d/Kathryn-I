@@ -37,11 +37,16 @@ namespace generator::service{
     code(std::move(_code))
     {}
 
-    std::string codedayta::finalize(codeTransfer& ctf) {
+    std::string
+    codedayta::finalize(codeTransfer& ctf) {
         code =  ctf.areThereCode(start_tag) ? ctf.retrieveCode(start_tag).code : "";
         return start_tag + '\n' + code + '\n' + stop_tag;
     }
-
+    /// finalize with owner's code
+    std::string
+    codedayta::finalize() {
+        return start_tag + '\n' + code + '\n' + stop_tag;
+    }
     /////// codeTransfer
     void codeTransfer::addCode(const std::string& start_tag, std::string stop_tag, std::string code) {
         codeMap.emplace(start_tag,

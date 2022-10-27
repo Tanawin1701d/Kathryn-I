@@ -39,6 +39,7 @@ namespace generator::service{
                   std::string _code
                   );
         std::string finalize(codeTransfer& ctf);
+        std::string finalize();
 
     };
 

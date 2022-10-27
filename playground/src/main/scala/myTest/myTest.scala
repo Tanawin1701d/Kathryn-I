@@ -18,6 +18,7 @@ class myBundle extends Bundle{
     val y = Output(UInt(1.W))
     val z = new myBundle2
     val cn = Output(UInt(1.W))
+    val noOpt = Input(UInt(1.W))
 }
 
 class connectedBundle extends Bundle{

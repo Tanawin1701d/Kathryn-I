@@ -23,6 +23,17 @@ namespace generator::object{
             VALUE
         };
 
+        struct initoutput{
+            std::string fullPathWire;
+            std::string value;
+            std::string gen(int maxFPW){ // max full path wire length
+                return fullPathWire +
+                       (service::repeatStr("", maxFPW-fullPathWire.length())) +
+                       " := " +
+                       value;
+            }
+        };
+
 
         class bundle;
         class port{
@@ -52,6 +63,7 @@ namespace generator::object{
             );
 
             std::string genPort(); //spacer between portname and -1
+            std::vector<initoutput>  genInitAssign(const std::string& prefix, bool flip); // due to chisel don't support uninitialize output
             std::string getDesc();
             PORT_TYPE   getPortType();
         };
@@ -76,12 +88,14 @@ namespace generator::object{
 
             ~bundle();
 
-            generatedDayta genObj( CTF& ctf ) override;
-            std::string    genPortSet();
-            void           addPort(std::string input_portName, port* input_port_ptr);
-            std::string    getFinalBundleName();
-            static std::string getFinalBundleName(const std::string& itfName,
-                                                      const std::string& id){
+            generatedDayta           genObj( CTF& ctf ) override;
+            std::string              genPortSet();
+            std::vector<initoutput>  genInitAssign(const std::string& prefix, bool flip); // due to chisel don't support uninitialize output
+            std::string              genInitAssignStr(const std::string& prefix);
+            void                     addPort(std::string input_portName, port* input_port_ptr);
+            std::string              getFinalBundleName();
+            static std::string       getFinalBundleName(const std::string& itfName,
+                                                        const std::string& id){
                 return itfName + "_" + id;
             }
 
