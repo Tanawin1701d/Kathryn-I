@@ -13,7 +13,7 @@
 
 
 #mainsource ignore
-/source/.bsp
-/source/project
-/source/target
-/source/test_run_dir
+/src/.bsp
+/src/project
+/src/target
+/src/test_run_dir
