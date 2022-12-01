@@ -28,10 +28,6 @@ namespace generator::object{
             virtual generatedDayta genObj( CTF& ctf ) = 0;
 
         };
-
-
-
-
     }
 
 

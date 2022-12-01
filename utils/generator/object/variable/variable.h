@@ -34,7 +34,7 @@ namespace generator::object{
 
 
 
-    }
+}
 
 
 

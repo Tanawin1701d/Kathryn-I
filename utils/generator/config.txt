@@ -1,2 +1,2 @@
-/home/tanawin/Work/vivado/Kathryn/
+/media/tanawin/tanawin1701d/Project/Kathryn/
 SPECIFICATION/core_spec_cleaned.xlsx
