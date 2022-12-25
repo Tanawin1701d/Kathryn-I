@@ -58,6 +58,7 @@ class TF_MARC_INSTR_TMI1 extends Bundle{
     val PC           = Flipped(new TF_PC_TP1)                  //for transfer program counter and privilege.
 }
 
+
 //needed bc data block    broadcast physical register
 class BC_PREG_G extends Bundle{
     val i_preg_rb1   = Input(UInt(VAR_CORE.I_BL_MARC_REG.W)) //address/index of physical register that wish to broadcast. [address 0 is implicit rule when did not want to broadcast data ] 

@@ -13,8 +13,8 @@ class INSTRUCTION_PAGE_WALKER_test(c: INSTRUCTION_PAGE_WALKER) extends PeekPokeT
     poke(c.io.cmd.c_enable, true)
     poke(c.io.inf_req_pc.i_pc , 0)
     poke(c.io.inf_req_pc.i_pvl, 0)
-    expect(c.io.st.s_output, 0)
-    expect(c.io.yy, 0)
+    expect(c.io.st.s_output, 1)
+    //expect(c.io.yy, 0)
     step(1)
 
 

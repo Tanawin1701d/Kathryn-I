@@ -13,6 +13,7 @@ object VAR_CORE {
     val I_BL_MARC_REG  =  6    //size of index/address to identify physical register                         
     val I_BL_MARC_CREG =  5    //size of index/address to identify control status register                          
     val I_BL_MARC_PIP  =  3    //size of index to identify execute pipes                        
+    val I_BL_ARC_RPIP  =  3    //size of index to reservation  station
     val I_BL_EX_PIP    =  3    //size of index to identify execution pips in connected in each reservation station.                      
     val I_N_EX_PIP     =  8    //Max number of execution pips in connected in each reservation station.                     
     val I_BL_EX_UNIT   =  3    //size of index to identify index of unit in execution pips in connected in each reservation station.                       
