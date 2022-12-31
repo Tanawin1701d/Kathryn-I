@@ -13,6 +13,11 @@ object Launcher {
       Driver.execute(() => new letMetry(), manager) {
         (c) => new letMetryTest(c)
       }
+    },
+    "letObjectTry" -> { (manager: TesterOptionsManager) =>
+      Driver.execute(() => new md(), manager) {
+        (c) => new letObjectTryTest(c)
+      }
     }
 
   )
