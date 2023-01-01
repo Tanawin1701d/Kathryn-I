@@ -37,3 +37,5 @@ Purpose of Kathryn-I is
 - 31/12/2022 component template for block building have been added to make chisel writing more group connectable. these component will be applied to new port design  [CORE_SPEC](https://github.com/Tanawin1701d/Kathryn-I/tree/compBase/SPECIFICATION/core_spec.ods)
 
 - 31/12/2022 next I will finish my component based design and refractor port connect at chisel code.
+
+- 1/1/2023 update core block link corresponds to [CORE_SPEC](https://github.com/Tanawin1701d/Kathryn-I/tree/compBase/SPECIFICATION/core_spec.ods).
